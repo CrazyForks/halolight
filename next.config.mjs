@@ -232,7 +232,7 @@ const nextConfig = {
   compress: true,
 
   // 生产环境 source map（关闭以减小体积）
-  productionBrowserSourceMaps: false,
+  productionBrowserSourceMaps: process.env.NODE_ENV === "production",
 
   // 输出配置 - standalone 模式便于 Docker 部署
   output: "standalone",
@@ -267,25 +267,6 @@ const nextConfig = {
       ],
     },
   ],
-
-  // 打包分析（按需开启）
-  ...(process.env.ANALYZE === "true" && {
-    webpack: (config, { isServer }) => {
-      if (!isServer) {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-        config.plugins.push(
-          new BundleAnalyzerPlugin({
-            analyzerMode: "static",
-            reportFilename: "./analyze/client.html",
-            openAnalyzer: false,
-          })
-        );
-      }
-      return config;
-    },
-  }),
-
   // 重定向和重写规则
   async redirects() {
     return [

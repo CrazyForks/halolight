@@ -8,7 +8,13 @@ import * as React from "react"
 
 import { BackToTop } from "@/components/ui/back-to-top"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
 import { findPermissionRule, getRouteTitle } from "@/config/routes"
 import { useTitle } from "@/hooks"
 import { KeepAliveWrapper } from "@/hooks/use-keep-alive"
@@ -132,7 +138,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* 移动端侧边栏 */}
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <SheetContent side="left" className="w-64 p-0">
-          <Sidebar collapsed={false} onCollapsedChange={() => {}} />
+          <SheetHeader className="sr-only">
+            <SheetTitle>移动导航</SheetTitle>
+            <SheetDescription>移动端侧边栏导航菜单</SheetDescription>
+          </SheetHeader>
+          <Sidebar collapsed={false} onCollapsedChange={() => setMobileMenuOpen(false)} />
         </SheetContent>
       </Sheet>
 

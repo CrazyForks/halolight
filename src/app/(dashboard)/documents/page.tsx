@@ -95,7 +95,7 @@ function formatDateTime(dateStr: string): string {
 
 export default function DocumentsPage() {
   const { data, isLoading } = useDocuments()
-  const documents = data?.list ?? []
+  const documents = React.useMemo(() => data?.list ?? [], [data?.list])
   const deleteDocument = useDeleteDocument()
   const createDocument = useCreateDocument()
 

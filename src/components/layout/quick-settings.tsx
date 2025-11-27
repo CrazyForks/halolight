@@ -19,7 +19,15 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import { type SkinPreset, useUiSettingsStore } from "@/stores/ui-settings-store"
@@ -269,6 +277,10 @@ export function QuickSettings() {
         side="right"
         className="w-[360px] sm:max-w-[420px] p-0 [&_[data-slot=sheet-close]]:hidden"
       >
+        <SheetHeader className="sr-only">
+          <SheetTitle>界面设置</SheetTitle>
+          <SheetDescription>控制主题、皮肤和界面布局</SheetDescription>
+        </SheetHeader>
         <div className="flex h-full min-h-0 flex-col">
           <div className="flex items-center justify-between gap-2 border-b px-4 py-3">
             <div className="flex items-center gap-2">

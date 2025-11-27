@@ -25,6 +25,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -195,6 +196,7 @@ export default function MessagesPage() {
             <DialogContent className="sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>新消息</DialogTitle>
+                <DialogDescription>填写收件人、主题与内容后发送</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <InputClear placeholder="收件人" />
