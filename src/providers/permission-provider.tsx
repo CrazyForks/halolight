@@ -30,7 +30,7 @@ export function PermissionProvider({ children }: { children: React.ReactNode }) 
     return mockRoles[0] // 默认 admin
   }, [user])
 
-  const permissions = role?.permissions || []
+  const permissions = React.useMemo(() => role?.permissions ?? [], [role])
 
   const hasPermission = React.useCallback(
     (permission: Permission) => permissions.includes(permission),

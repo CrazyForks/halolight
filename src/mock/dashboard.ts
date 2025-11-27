@@ -139,4 +139,5 @@ Mock.mock("/api/dashboard/overview", "get", () => {
   }
 })
 
-export default {}
+const dashboardMock = {}
+export default dashboardMock

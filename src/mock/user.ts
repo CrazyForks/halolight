@@ -149,4 +149,5 @@ Mock.mock("/api/roles", "get", () => {
   }
 })
 
-export default {}
+const userMock = {}
+export default userMock

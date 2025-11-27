@@ -16,7 +16,6 @@ import {
 } from "lucide-react"
 import * as React from "react"
 
-import { AdminLayout } from "@/components/layout/admin-layout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -90,8 +89,7 @@ export default function NotificationsPage() {
   }
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">通知中心</h1>
@@ -255,7 +253,6 @@ export default function NotificationsPage() {
             )}
           </CardContent>
         </Card>
-      </div>
-    </AdminLayout>
+    </div>
   )
 }

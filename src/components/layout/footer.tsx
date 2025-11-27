@@ -41,7 +41,7 @@ export function Footer() {
   const [showBackToTop, setShowBackToTop] = React.useState(false)
   const router = useRouter()
   const pathname = usePathname()
-  const { pendingPath, label, startNavigation } = useNavigationStore()
+  const { pendingPath, label, source, startNavigation } = useNavigationStore()
   const titleMap: Record<string, string> = {
     "/": "首页",
     "/users": "用户管理",
@@ -302,7 +302,12 @@ export function Footer() {
         </Button>
       </motion.div>
 
-      <PendingOverlay visible={!!pendingPath} label={label} />
+      <PendingOverlay
+        visible={!!pendingPath}
+        label={label}
+        mode={source === "tabbar-refresh" ? "refresh" : "navigate"}
+        delay={source === "tabbar-refresh" ? 0 : undefined}
+      />
     </footer>
   )
 }

@@ -35,7 +35,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
   const [commandOpen, setCommandOpen] = React.useState(false)
   const [isDesktop, setIsDesktop] = React.useState(true)
-  const { pendingPath, label, finishNavigation } = useNavigationStore()
+  const { pendingPath, label, source, finishNavigation } = useNavigationStore()
   const { showFooter, showTabBar, skin } = useUiSettingsStore()
   const pathname = usePathname()
   const titleMap: Record<string, string> = {
@@ -77,10 +77,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }, [])
 
   React.useEffect(() => {
-    if (pendingPath && pathname === pendingPath) {
+    if (!pendingPath) return
+    // 刷新场景下由 tabs 控制显隐，避免被同步路径立即关闭
+    if (source === "tabbar-refresh") return
+    if (pathname === pendingPath) {
       finishNavigation()
     }
-  }, [pathname, pendingPath, finishNavigation])
+  }, [pathname, pendingPath, source, finishNavigation])
 
   React.useEffect(() => {
     const root = document.documentElement
@@ -170,7 +173,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* 命令面板 */}
       <CommandMenu open={commandOpen} onOpenChange={setCommandOpen} />
 
-      <PendingOverlay visible={!!pendingPath} label={label} />
+      <PendingOverlay
+        visible={!!pendingPath}
+        label={label}
+        mode={source === "tabbar-refresh" ? "refresh" : "navigate"}
+        delay={source === "tabbar-refresh" ? 0 : undefined}
+      />
     </div>
   )
 }

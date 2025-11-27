@@ -26,9 +26,9 @@ import {
   Upload,
   X,
 } from "lucide-react"
+import Image from "next/image"
 import * as React from "react"
 
-import { AdminLayout } from "@/components/layout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -144,8 +144,7 @@ export default function FilesPage() {
   }
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* 页面标题 */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -618,11 +617,14 @@ export default function FilesPage() {
                           <Separator />
                           <div className="space-y-3">
                             <h4 className="text-sm font-medium">预览</h4>
-                            <div className="rounded-lg overflow-hidden border">
-                              <img
+                            <div className="relative overflow-hidden rounded-lg border">
+                              <Image
                                 src={selectedFile.thumbnail}
                                 alt={selectedFile.name}
-                                className="w-full h-auto"
+                                width={640}
+                                height={360}
+                                className="h-auto w-full object-cover"
+                                sizes="(max-width: 768px) 100vw, 480px"
                               />
                             </div>
                           </div>
@@ -780,11 +782,14 @@ export default function FilesPage() {
                         <Separator />
                         <div className="space-y-3">
                           <h4 className="text-sm font-medium">预览</h4>
-                          <div className="rounded-lg overflow-hidden border">
-                            <img
+                          <div className="relative overflow-hidden rounded-lg border">
+                            <Image
                               src={selectedFile.thumbnail}
                               alt={selectedFile.name}
-                              className="w-full h-auto"
+                              width={640}
+                              height={360}
+                              className="h-auto w-full object-cover"
+                              sizes="(max-width: 768px) 100vw, 480px"
                             />
                           </div>
                         </div>
@@ -817,7 +822,6 @@ export default function FilesPage() {
             </>
           )}
         </AnimatePresence>
-      </div>
-    </AdminLayout>
+    </div>
   )
 }

@@ -19,7 +19,6 @@ import {
 import Link from "next/link"
 import * as React from "react"
 
-import { AdminLayout } from "@/components/layout/admin-layout"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -124,8 +123,7 @@ export default function DocsPage() {
   )
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* 页面标题 */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
@@ -287,7 +285,6 @@ export default function DocsPage() {
             </Card>
           </div>
         </div>
-      </div>
-    </AdminLayout>
+    </div>
   )
 }

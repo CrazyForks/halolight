@@ -13,10 +13,9 @@ import {
   Trash2,
 } from "lucide-react"
 import * as React from "react"
-import { FormProvider, useForm } from "react-hook-form"
+import { FormProvider, useForm, type UseFormReturn, useWatch } from "react-hook-form"
 
-import { Column,DataTable } from "@/components/data-table"
-import { AdminLayout } from "@/components/layout"
+import { Column, DataTable } from "@/components/data-table"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -57,10 +56,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useCreateUser, useDeleteUser, useRoles,useUpdateUser, useUsers } from "@/hooks/use-users"
-import type { User } from "@/lib/api/services"
-import { type UserFormData,userSchema } from "@/lib/validations/schemas"
-import { PermissionGuard,usePermission } from "@/providers/permission-provider"
+import { useCreateUser, useDeleteUser, useRoles, useUpdateUser, useUsers } from "@/hooks/use-users"
+import type { Role, User } from "@/lib/api/services"
+import { type UserFormData, userSchema } from "@/lib/validations/schemas"
+import { PermissionGuard, usePermission } from "@/providers/permission-provider"
 
 const statusMap = {
   active: { label: "活跃", variant: "default" as const },
@@ -73,6 +72,135 @@ const roleColors: Record<string, string> = {
   manager: "bg-blue-500/10 text-blue-500 border-blue-500/20",
   editor: "bg-green-500/10 text-green-500 border-green-500/20",
   viewer: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20",
+}
+
+interface FormDialogContentProps {
+  form: UseFormReturn<UserFormData>
+  roles: Role[]
+  onSubmit: (data: UserFormData) => void
+  onCancel: () => void
+  isEdit?: boolean
+  isSubmitting: boolean
+}
+
+function FormDialogContent({
+  form,
+  roles,
+  onSubmit,
+  onCancel,
+  isEdit = false,
+  isSubmitting,
+}: FormDialogContentProps) {
+  const watchedRole = useWatch({
+    control: form.control,
+    name: "role",
+  })
+  const watchedStatus = useWatch({
+    control: form.control,
+    name: "status",
+  })
+
+  return (
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <div className="grid gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="name">姓名</Label>
+            <InputClearForm id="name" name="name" placeholder="输入用户姓名" />
+            {form.formState.errors.name && (
+              <p className="text-sm text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {form.formState.errors.name.message}
+              </p>
+            )}
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="email">邮箱</Label>
+            <InputClearForm id="email" name="email" type="email" placeholder="输入邮箱地址" />
+            {form.formState.errors.email && (
+              <p className="text-sm text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {form.formState.errors.email.message}
+              </p>
+            )}
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="phone">电话（可选）</Label>
+            <InputClearForm id="phone" name="phone" placeholder="输入手机号" />
+            {form.formState.errors.phone && (
+              <p className="text-sm text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {form.formState.errors.phone.message}
+              </p>
+            )}
+          </div>
+          <div className="grid gap-2">
+            <Label>角色</Label>
+            <Select
+              value={watchedRole ?? ""}
+              onValueChange={(value) => form.setValue("role", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="选择角色" />
+              </SelectTrigger>
+              <SelectContent>
+                {roles.map((role) => (
+                  <SelectItem key={role.id} value={role.id}>
+                    {role.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {form.formState.errors.role && (
+              <p className="text-sm text-destructive flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {form.formState.errors.role.message}
+              </p>
+            )}
+          </div>
+          <div className="grid gap-2">
+            <Label>状态</Label>
+            <Select
+              value={watchedStatus ?? ""}
+              onValueChange={(value: "active" | "inactive" | "suspended") =>
+                form.setValue("status", value)
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="选择状态" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">活跃</SelectItem>
+                <SelectItem value="inactive">禁用</SelectItem>
+                <SelectItem value="suspended">暂停</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              onCancel()
+              form.reset()
+            }}
+          >
+            取消
+          </Button>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            {isEdit ? "保存" : "创建"}
+          </Button>
+        </DialogFooter>
+      </form>
+    </FormProvider>
+  )
 }
 
 export default function UsersPage() {
@@ -101,6 +229,8 @@ export default function UsersPage() {
   const createMutation = useCreateUser()
   const updateMutation = useUpdateUser()
   const deleteMutation = useDeleteUser()
+  const handleCloseAddDialog = React.useCallback(() => setIsAddDialogOpen(false), [])
+  const handleCloseEditDialog = React.useCallback(() => setIsEditDialogOpen(false), [])
 
   // Form for create/edit
   const form = useForm<UserFormData>({
@@ -114,7 +244,7 @@ export default function UsersPage() {
     },
   })
 
-  const users = data?.list || []
+  const users = React.useMemo(() => data?.list ?? [], [data?.list])
   const total = data?.total || 0
 
   // 统计数据
@@ -277,116 +407,8 @@ export default function UsersPage() {
     },
   ]
 
-  // 表单对话框内容
-  const FormDialogContent = ({ onSubmit, isEdit = false }: { onSubmit: (data: UserFormData) => void; isEdit?: boolean }) => (
-    <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="name">姓名</Label>
-            <InputClearForm id="name" name="name" placeholder="输入用户姓名" />
-            {form.formState.errors.name && (
-              <p className="text-sm text-destructive flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
-                {form.formState.errors.name.message}
-              </p>
-            )}
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="email">邮箱</Label>
-            <InputClearForm id="email" name="email" type="email" placeholder="输入邮箱地址" />
-            {form.formState.errors.email && (
-              <p className="text-sm text-destructive flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
-                {form.formState.errors.email.message}
-              </p>
-            )}
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="phone">电话（可选）</Label>
-            <InputClearForm id="phone" name="phone" placeholder="输入手机号" />
-            {form.formState.errors.phone && (
-              <p className="text-sm text-destructive flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
-                {form.formState.errors.phone.message}
-              </p>
-            )}
-          </div>
-        <div className="grid gap-2">
-          <Label>角色</Label>
-          <Select
-            value={form.watch("role")}
-            onValueChange={(value) => form.setValue("role", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="选择角色" />
-            </SelectTrigger>
-            <SelectContent>
-              {roles.map((role) => (
-                <SelectItem key={role.id} value={role.id}>
-                  {role.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {form.formState.errors.role && (
-            <p className="text-sm text-destructive flex items-center gap-1">
-              <AlertCircle className="h-3 w-3" />
-              {form.formState.errors.role.message}
-            </p>
-          )}
-        </div>
-        <div className="grid gap-2">
-          <Label>状态</Label>
-          <Select
-            value={form.watch("status")}
-            onValueChange={(value: "active" | "inactive" | "suspended") =>
-              form.setValue("status", value)
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="选择状态" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="active">活跃</SelectItem>
-              <SelectItem value="inactive">禁用</SelectItem>
-              <SelectItem value="suspended">暂停</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <DialogFooter>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => {
-            if (isEdit) {
-              setIsEditDialogOpen(false)
-            } else {
-              setIsAddDialogOpen(false)
-            }
-            form.reset()
-          }}
-        >
-          取消
-        </Button>
-        <Button
-          type="submit"
-          disabled={createMutation.isPending || updateMutation.isPending}
-        >
-          {(createMutation.isPending || updateMutation.isPending) && (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          )}
-          {isEdit ? "保存" : "创建"}
-        </Button>
-      </DialogFooter>
-    </form>
-    </FormProvider>
-  )
-
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* 页面标题 */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -411,7 +433,13 @@ export default function UsersPage() {
                   <DialogTitle>添加新用户</DialogTitle>
                   <DialogDescription>填写以下信息创建新用户账号</DialogDescription>
                 </DialogHeader>
-                <FormDialogContent onSubmit={handleCreate} />
+                <FormDialogContent
+                  form={form}
+                  roles={roles}
+                  onSubmit={handleCreate}
+                  onCancel={handleCloseAddDialog}
+                  isSubmitting={createMutation.isPending}
+                />
               </DialogContent>
             </Dialog>
           </PermissionGuard>
@@ -517,14 +545,21 @@ export default function UsersPage() {
 
         {/* 编辑对话框 */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>编辑用户</DialogTitle>
-              <DialogDescription>修改用户信息</DialogDescription>
-            </DialogHeader>
-            <FormDialogContent onSubmit={handleUpdate} isEdit />
-          </DialogContent>
-        </Dialog>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>编辑用户</DialogTitle>
+                  <DialogDescription>修改用户信息</DialogDescription>
+                </DialogHeader>
+                <FormDialogContent
+                  form={form}
+                  roles={roles}
+                  onSubmit={handleUpdate}
+                  onCancel={handleCloseEditDialog}
+                  isEdit
+                  isSubmitting={updateMutation.isPending}
+                />
+              </DialogContent>
+            </Dialog>
 
         {/* 删除确认对话框 */}
         <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
@@ -549,7 +584,6 @@ export default function UsersPage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-      </div>
-    </AdminLayout>
+    </div>
   )
 }

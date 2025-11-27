@@ -28,7 +28,6 @@ import {
 } from "lucide-react"
 import * as React from "react"
 
-import { AdminLayout } from "@/components/layout"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -148,8 +147,7 @@ export default function DocumentsPage() {
   }
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* 页面标题 */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -816,7 +814,6 @@ export default function DocumentsPage() {
             </>
           )}
         </AnimatePresence>
-      </div>
-    </AdminLayout>
+    </div>
   )
 }

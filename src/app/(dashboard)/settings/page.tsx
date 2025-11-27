@@ -12,7 +12,6 @@ import {
 } from "lucide-react"
 import * as React from "react"
 
-import { AdminLayout } from "@/components/layout"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -89,8 +88,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         {/* 页面标题 */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -264,7 +262,6 @@ export default function SettingsPage() {
             </Card>
           </motion.div>
         </div>
-      </div>
-    </AdminLayout>
+    </div>
   )
 }

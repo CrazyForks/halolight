@@ -1,6 +1,6 @@
 "use client"
 
-import { AnimatePresence,motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 import {
   Bell,
   Calendar,
@@ -11,13 +11,14 @@ import {
   HelpCircle,
   Home,
   LineChart,
+  Loader2,
   MessageSquare,
   Settings,
   User,
   Users,
   X,
 } from "lucide-react"
-import { usePathname,useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
@@ -28,9 +29,10 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
+import { usePageCacheStore } from "@/hooks/use-keep-alive"
 import { cn } from "@/lib/utils"
 import { useNavigationStore } from "@/stores/navigation-store"
-import { type Tab,useTabsStore } from "@/stores/tabs-store"
+import { type Tab, useTabsStore } from "@/stores/tabs-store"
 import { useUiSettingsStore } from "@/stores/ui-settings-store"
 
 // 路径到标题的映射
@@ -67,10 +69,14 @@ export function TabBar() {
   const router = useRouter()
   const pathname = usePathname()
   const startNavigation = useNavigationStore((state) => state.startNavigation)
+  const finishNavigation = useNavigationStore((state) => state.finishNavigation)
   const tabsContainerRef = React.useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = React.useState(false)
   const [canScrollRight, setCanScrollRight] = React.useState(false)
   const showTabBar = useUiSettingsStore((state) => state.showTabBar)
+  const [refreshingTabId, setRefreshingTabId] = React.useState<string | null>(null)
+  const [isPending, startTransition] = React.useTransition()
+  const refreshTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
   const { tabs, activeTabId, addTab, removeTab, setActiveTab, clearTabs, getTabByPath } =
     useTabsStore()
@@ -189,6 +195,60 @@ export function TabBar() {
     router.push("/")
   }
 
+  const handleRefreshTab = React.useCallback(
+    (tab: Tab) => {
+      const isCurrent = tab.path === pathname
+      startNavigation({
+        path: tab.path,
+        label: `正在刷新 ${tab.title}`,
+        source: "tabbar-refresh",
+      })
+      usePageCacheStore.getState().clearPageState(tab.path)
+      setRefreshingTabId(tab.id)
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current)
+      }
+      refreshTimeoutRef.current = setTimeout(() => {
+        setRefreshingTabId(null)
+        finishNavigation()
+      }, 5000)
+
+      const runRefresh = () => startTransition(() => router.refresh())
+
+      if (isCurrent) {
+        runRefresh()
+        return
+      }
+
+      setActiveTab(tab.id)
+      router.push(tab.path)
+      setTimeout(runRefresh, 50)
+    },
+    [finishNavigation, pathname, router, setActiveTab, startNavigation]
+  )
+
+  React.useEffect(() => {
+    if (!refreshingTabId) return
+    if (isPending) return
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current)
+      refreshTimeoutRef.current = null
+    }
+    const timer = setTimeout(() => {
+      setRefreshingTabId(null)
+      finishNavigation()
+    }, 250)
+    return () => clearTimeout(timer)
+  }, [finishNavigation, isPending, refreshingTabId])
+
+  React.useEffect(() => {
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current)
+      }
+    }
+  }, [])
+
   if (!showTabBar) return null
   if (tabs.length <= 1) return null
 
@@ -244,7 +304,12 @@ export function TabBar() {
                   ) : null}
 
                   {/* 标题 */}
-                  <span className="truncate text-sm">{tab.title}</span>
+                  <span className="truncate text-sm flex items-center gap-1">
+                    <span>{tab.title}</span>
+                    {refreshingTabId === tab.id && (
+                      <Loader2 className="h-3 w-3 animate-spin text-primary" />
+                    )}
+                  </span>
 
                   {/* 关闭按钮 */}
                   {tab.closable !== false && (
@@ -258,11 +323,11 @@ export function TabBar() {
                     </Button>
                   )}
                 </motion.div>
-              </ContextMenuTrigger>
-              <ContextMenuContent>
-                <ContextMenuItem onClick={() => router.push(tab.path)}>
-                  刷新页面
-                </ContextMenuItem>
+            </ContextMenuTrigger>
+            <ContextMenuContent>
+              <ContextMenuItem onClick={() => handleRefreshTab(tab)}>
+                刷新页面
+              </ContextMenuItem>
                 <ContextMenuSeparator />
                 {tab.closable !== false && (
                   <ContextMenuItem onClick={(e) => handleCloseTab(e as React.MouseEvent, tab)}>

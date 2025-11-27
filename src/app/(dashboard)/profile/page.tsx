@@ -15,7 +15,6 @@ import {
 } from "lucide-react"
 import * as React from "react"
 
-import { AdminLayout } from "@/components/layout/admin-layout"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -62,8 +61,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">个人资料</h1>
           <p className="text-muted-foreground">管理您的账户信息和偏好设置</p>
@@ -417,7 +415,6 @@ export default function ProfilePage() {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
-    </AdminLayout>
+    </div>
   )
 }
