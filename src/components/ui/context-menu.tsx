@@ -6,15 +6,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-const ContextMenu = React.forwardRef<
-  React.ElementRef<typeof ContextMenuPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Root>
->(({ children, ...props }, ref) => (
-  <ContextMenuPrimitive.Root ref={ref} {...props}>
-    {children}
-  </ContextMenuPrimitive.Root>
-))
-ContextMenu.displayName = ContextMenuPrimitive.Root.displayName
+const ContextMenu = ContextMenuPrimitive.Root
 
 const ContextMenuTrigger = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.Trigger>,
