@@ -1,7 +1,18 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
-export type SkinPreset = "default" | "ocean" | "sunset" | "aurora"
+export type SkinPreset =
+  | "default"
+  | "blue"
+  | "emerald"
+  | "amber"
+  | "violet"
+  | "rose"
+  | "teal"
+  | "slate"
+  | "ocean"
+  | "sunset"
+  | "aurora"
 
 interface UiSettingsState {
   skin: SkinPreset
@@ -16,7 +27,7 @@ export const useUiSettingsStore = create<UiSettingsState>()(
   persist(
     (set) => ({
       skin: "default",
-      showFooter: true,
+      showFooter: false,
       showTabBar: true,
       setSkin: (skin) => set({ skin }),
       setShowFooter: (visible) => set({ showFooter: visible }),

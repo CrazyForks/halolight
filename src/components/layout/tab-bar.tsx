@@ -14,6 +14,7 @@ import {
   Loader2,
   MessageSquare,
   Settings,
+  ShieldCheck,
   User,
   Users,
   X,
@@ -39,6 +40,7 @@ import { useUiSettingsStore } from "@/stores/ui-settings-store"
 const pathTitles: Record<string, string> = {
   "/": "首页",
   "/users": "用户管理",
+  "/accounts": "账号与权限",
   "/analytics": "数据分析",
   "/settings": "系统设置",
   "/documents": "文档管理",
@@ -54,6 +56,7 @@ const pathTitles: Record<string, string> = {
 const pathIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   "/": Home,
   "/users": Users,
+  "/accounts": ShieldCheck,
   "/analytics": LineChart,
   "/settings": Settings,
   "/documents": FileText,
@@ -63,6 +66,20 @@ const pathIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   "/notifications": Bell,
   "/profile": User,
   "/docs": HelpCircle,
+}
+
+const resolveTitle = (path: string) => {
+  const match = Object.entries(pathTitles).find(
+    ([key]) => path === key || path.startsWith(`${key}/`)
+  )
+  return match ? match[1] : path.split("/").pop() || "新页面"
+}
+
+const resolveIcon = (path: string) => {
+  const match = Object.entries(pathIcons).find(
+    ([key]) => path === key || path.startsWith(`${key}/`)
+  )
+  return match ? match[1] : Home
 }
 
 export function TabBar() {
@@ -78,7 +95,7 @@ export function TabBar() {
   const [isPending, startTransition] = React.useTransition()
   const refreshTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
-  const { tabs, activeTabId, addTab, removeTab, setActiveTab, clearTabs, getTabByPath } =
+  const { tabs, activeTabId, addTab, removeTab, setActiveTab, clearTabs, getTabByPath, updateTab } =
     useTabsStore()
 
   // 检查滚动状态
@@ -107,14 +124,17 @@ export function TabBar() {
   React.useEffect(() => {
     if (pathname) {
       const existingTab = getTabByPath(pathname)
+      const title = resolveTitle(pathname)
       if (existingTab) {
         setActiveTab(existingTab.id)
+        if (existingTab.title !== title) {
+          updateTab(existingTab.id, { title })
+        }
       } else {
-        const title = pathTitles[pathname] || pathname.split("/").pop() || "新页面"
-        addTab({ title, path: pathname })
+        addTab({ title, path: pathname, icon: resolveIcon(pathname).displayName })
       }
     }
-  }, [pathname, addTab, setActiveTab, getTabByPath])
+  }, [pathname, addTab, setActiveTab, getTabByPath, updateTab])
 
   // 监听标签变化，检查滚动
   React.useEffect(() => {

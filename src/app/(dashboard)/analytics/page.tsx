@@ -26,6 +26,7 @@ import {
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useChartPalette } from "@/hooks/use-chart-palette"
 
 // 模拟数据
 const weeklyData = [
@@ -44,28 +45,28 @@ const metrics = [
     value: "128,430",
     change: 12.5,
     icon: Eye,
-    color: "text-blue-500",
+    colorKey: "primary",
   },
   {
     title: "独立访客",
     value: "24,521",
     change: 8.2,
     icon: Users,
-    color: "text-green-500",
+    colorKey: "secondary",
   },
   {
     title: "平均停留时间",
     value: "4m 32s",
     change: -2.4,
     icon: Clock,
-    color: "text-yellow-500",
+    colorKey: "quaternary",
   },
   {
     title: "点击率",
     value: "3.24%",
     change: 4.1,
     icon: MousePointerClick,
-    color: "text-purple-500",
+    colorKey: "tertiary",
   },
 ]
 
@@ -86,6 +87,7 @@ export default function AnalyticsPage() {
   // 使用 state 来避免 SSR/客户端不一致
   const [hourlyData, setHourlyData] = React.useState<Array<{hour: string, value: number}>>([])
   const [mounted, setMounted] = React.useState(false)
+  const palette = useChartPalette()
 
   React.useEffect(() => {
     setMounted(true)
@@ -118,21 +120,20 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardDescription>{metric.title}</CardDescription>
-                <metric.icon className={`h-5 w-5 ${metric.color}`} />
+                <metric.icon
+                  className="h-5 w-5"
+                  style={{ color: palette[metric.colorKey as keyof typeof palette] || palette.primary }}
+                />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{metric.value}</div>
                 <div className="flex items-center gap-1 mt-1">
                   {metric.change > 0 ? (
-                    <TrendingUp className="h-4 w-4 text-green-500" />
+                    <TrendingUp className="h-4 w-4" style={{ color: palette.positive }} />
                   ) : (
-                    <TrendingDown className="h-4 w-4 text-red-500" />
+                    <TrendingDown className="h-4 w-4" style={{ color: palette.negative }} />
                   )}
-                  <span
-                    className={
-                      metric.change > 0 ? "text-green-500" : "text-red-500"
-                    }
-                  >
+                  <span style={{ color: metric.change > 0 ? palette.positive : palette.negative }}>
                     {Math.abs(metric.change)}%
                   </span>
                   <span className="text-xs text-muted-foreground">较上周</span>
@@ -161,8 +162,8 @@ export default function AnalyticsPage() {
                   <AreaChart data={weeklyData}>
                     <defs>
                       <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
+                        <stop offset="5%" stopColor={palette.primary} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={palette.primary} stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -178,7 +179,7 @@ export default function AnalyticsPage() {
                     <Area
                       type="monotone"
                       dataKey="visitors"
-                      stroke="hsl(var(--chart-1))"
+                      stroke={palette.primary}
                       fillOpacity={1}
                       fill="url(#colorVisitors)"
                       strokeWidth={2}
@@ -216,7 +217,7 @@ export default function AnalyticsPage() {
                     />
                     <Bar
                       dataKey="bounceRate"
-                      fill="hsl(var(--chart-2))"
+                      fill={palette.secondary}
                       radius={[4, 4, 0, 0]}
                     />
                   </BarChart>
@@ -271,7 +272,7 @@ export default function AnalyticsPage() {
                     <Line
                       type="monotone"
                       dataKey="value"
-                      stroke="hsl(var(--chart-3))"
+                      stroke={palette.tertiary}
                       strokeWidth={2}
                       dot={false}
                       activeDot={{ r: 4 }}
