@@ -137,7 +137,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* 移动端侧边栏 */}
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <SheetContent side="left" className="w-64 p-0">
+        <SheetContent
+          side="left"
+          className="w-64 p-0 [&_[data-slot=sheet-close]]:hidden"
+        >
           <SheetHeader className="sr-only">
             <SheetTitle>移动导航</SheetTitle>
             <SheetDescription>移动端侧边栏导航菜单</SheetDescription>
