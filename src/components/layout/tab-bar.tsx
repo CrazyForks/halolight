@@ -31,6 +31,7 @@ import {
 import { cn } from "@/lib/utils"
 import { useNavigationStore } from "@/stores/navigation-store"
 import { type Tab,useTabsStore } from "@/stores/tabs-store"
+import { useUiSettingsStore } from "@/stores/ui-settings-store"
 
 // 路径到标题的映射
 const pathTitles: Record<string, string> = {
@@ -69,6 +70,7 @@ export function TabBar() {
   const tabsContainerRef = React.useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = React.useState(false)
   const [canScrollRight, setCanScrollRight] = React.useState(false)
+  const showTabBar = useUiSettingsStore((state) => state.showTabBar)
 
   const { tabs, activeTabId, addTab, removeTab, setActiveTab, clearTabs, getTabByPath } =
     useTabsStore()
@@ -187,6 +189,7 @@ export function TabBar() {
     router.push("/")
   }
 
+  if (!showTabBar) return null
   if (tabs.length <= 1) return null
 
   return (

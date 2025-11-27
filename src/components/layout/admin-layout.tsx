@@ -8,6 +8,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { useTitle } from "@/hooks"
 import { KeepAliveWrapper } from "@/hooks/use-keep-alive"
 import { useNavigationStore } from "@/stores/navigation-store"
+import { useUiSettingsStore } from "@/stores/ui-settings-store"
 
 import { CommandMenu } from "./command-menu"
 import { Footer } from "./footer"
@@ -17,7 +18,6 @@ import { Sidebar } from "./sidebar"
 import { TabBar } from "./tab-bar"
 
 const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed"
-const FOOTER_VISIBLE_KEY = "footer-visible"
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -32,11 +32,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     }
     return false
   })
-  const [footerVisible, setFooterVisible] = React.useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
   const [commandOpen, setCommandOpen] = React.useState(false)
   const [isDesktop, setIsDesktop] = React.useState(true)
   const { pendingPath, label, finishNavigation } = useNavigationStore()
+  const { showFooter, showTabBar, skin } = useUiSettingsStore()
   const pathname = usePathname()
   const titleMap: Record<string, string> = {
     "/": "仪表盘",
@@ -65,11 +65,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     if (saved !== null) {
       setSidebarCollapsed(saved === "true")
     }
-
-    const savedFooter = localStorage.getItem(FOOTER_VISIBLE_KEY)
-    if (savedFooter !== null) {
-      setFooterVisible(savedFooter !== "false")
-    }
   }, [])
 
   React.useEffect(() => {
@@ -82,14 +77,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }, [])
 
   React.useEffect(() => {
-    localStorage.setItem(FOOTER_VISIBLE_KEY, String(footerVisible))
-  }, [footerVisible])
-
-  React.useEffect(() => {
     if (pendingPath && pathname === pendingPath) {
       finishNavigation()
     }
   }, [pathname, pendingPath, finishNavigation])
+
+  React.useEffect(() => {
+    const root = document.documentElement
+    if (skin === "default") {
+      root.removeAttribute("data-skin")
+      return
+    }
+    root.dataset.skin = skin
+  }, [skin])
 
   const marginLeft = isDesktop ? (sidebarCollapsed ? 64 : 240) : 0
 
@@ -115,17 +115,28 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         initial={false}
         animate={{ marginLeft }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
-        className="relative grid h-full min-h-0 grid-rows-[auto_auto_1fr_auto] overflow-hidden"
+        className="relative flex flex-1 min-h-0 flex-col overflow-hidden"
       >
         <Header
           onMenuClick={() => setMobileMenuOpen(true)}
           onSearchClick={() => setCommandOpen(true)}
-          footerVisible={footerVisible}
-          onFooterToggle={setFooterVisible}
         />
 
         {/* 多标签栏 */}
-        <TabBar />
+        <AnimatePresence initial={false}>
+          {showTabBar && (
+            <motion.div
+              key="tabbar"
+              initial={{ opacity: 0, height: 0, y: -6 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -6 }}
+              transition={{ duration: 0.18 }}
+              className="overflow-hidden"
+            >
+              <TabBar />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <AnimatePresence mode="wait">
           <motion.main
@@ -133,14 +144,27 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="p-6 min-h-0 overflow-y-auto"
+            className="flex-1 p-6 min-h-0 overflow-y-auto"
           >
             <KeepAliveWrapper>
               {children}
             </KeepAliveWrapper>
           </motion.main>
         </AnimatePresence>
-        {footerVisible && <Footer />}
+        <AnimatePresence initial={false}>
+          {showFooter && (
+            <motion.div
+              key="footer"
+              initial={{ opacity: 0, height: 0, y: 10 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <Footer />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
 
       {/* 命令面板 */}

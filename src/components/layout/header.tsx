@@ -9,7 +9,6 @@ import * as React from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,21 +18,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useAuthStore } from "@/stores/auth-store"
 import { useErrorStore } from "@/stores/error-store"
 import { useNavigationStore } from "@/stores/navigation-store"
 
-import { ThemeToggle } from "./theme-toggle"
+import { QuickSettings } from "./quick-settings"
 
 interface HeaderProps {
   onMenuClick: () => void
   onSearchClick: () => void
-  footerVisible: boolean
-  onFooterToggle: (visible: boolean) => void
 }
 
-export function Header({ onMenuClick, onSearchClick, footerVisible, onFooterToggle }: HeaderProps) {
+export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
   const router = useRouter()
   const { user, logout } = useAuthStore()
   const startNavigation = useNavigationStore((state) => state.startNavigation)
@@ -246,24 +242,8 @@ export function Header({ onMenuClick, onSearchClick, footerVisible, onFooterTogg
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex items-center gap-2 rounded-lg border border-transparent px-2 py-1 transition hover:border-border/70">
-              <span className="hidden text-xs text-muted-foreground xl:inline">显示页脚</span>
-              <Switch
-                checked={footerVisible}
-                onCheckedChange={onFooterToggle}
-                aria-label="切换页脚显示"
-              />
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" align="end" className="bg-background text-foreground shadow-lg">
-            {footerVisible ? "隐藏页脚" : "显示页脚"}
-          </TooltipContent>
-        </Tooltip>
-
-        {/* 主题切换 */}
-        <ThemeToggle />
+        {/* 界面设置 */}
+        <QuickSettings />
 
         {/* 用户菜单 */}
         <DropdownMenu>
