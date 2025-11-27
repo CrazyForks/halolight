@@ -22,9 +22,18 @@ import { useNavigationStore } from "@/stores/navigation-store"
 interface SidebarProps {
   collapsed: boolean
   onCollapsedChange: (collapsed: boolean) => void
+  expandedWidth?: number | string
+  collapsedWidth?: number | string
+  fixed?: boolean
 }
 
-export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
+export function Sidebar({
+  collapsed,
+  onCollapsedChange,
+  expandedWidth = 220,
+  collapsedWidth = 64,
+  fixed = true,
+}: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const startNavigation = useNavigationStore((state) => state.startNavigation)
@@ -45,10 +54,11 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
     <TooltipProvider delayDuration={0}>
       <motion.aside
         initial={false}
-        animate={{ width: collapsed ? 64 : 220 }}
+        animate={{ width: collapsed ? collapsedWidth : expandedWidth }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
         className={cn(
-          "fixed left-0 top-0 z-40 h-screen border-r border-border bg-sidebar",
+          fixed ? "fixed left-0 top-0 h-screen" : "relative h-full",
+          "z-40 border-r border-border bg-sidebar",
           "flex flex-col"
         )}
         style={{ pointerEvents: "auto" }}

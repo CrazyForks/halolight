@@ -146,7 +146,12 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             <SheetTitle>移动导航</SheetTitle>
             <SheetDescription>移动端侧边栏导航菜单</SheetDescription>
           </SheetHeader>
-          <Sidebar collapsed={false} onCollapsedChange={() => setMobileMenuOpen(false)} />
+          <Sidebar
+            collapsed={false}
+            onCollapsedChange={() => setMobileMenuOpen(false)}
+            expandedWidth="100%"
+            fixed={false}
+          />
         </SheetContent>
       </Sheet>
 
