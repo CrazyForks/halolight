@@ -6,6 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 这是一个基于 Next.js 14 App Router 的中文后台管理系统 (Admin Pro)，使用 TypeScript、Tailwind CSS 4、shadcn/ui 和 framer-motion 构建。
 
+## 技术栈速览
+- 框架：Next.js 14 App Router + TypeScript
+- 样式：Tailwind CSS 4、shadcn/ui (Radix)、lucide-react
+- 动画/交互：framer-motion、react-grid-layout（可拖拽仪表盘）
+- 数据：React Query、Zustand（全局/仪表盘布局状态）、recharts（图表）
+- Mock：Mock.js（`NEXT_PUBLIC_MOCK=true` 时启用）
+- 构建工具：pnpm、ESLint（simple-import-sort / unused-imports）
+
 ## 常用命令
 
 ```bash
@@ -22,32 +30,26 @@ pnpm lint:fix     # ESLint 自动修复
 ThemeProvider → MockProvider → QueryProvider → AuthProvider → PermissionProvider → WebSocketProvider
 ```
 
-### 核心目录结构
+### 核心目录结构（from `find src -maxdepth 3 -type d`）
 
-- **src/app/** - Next.js App Router 页面
-  - `(auth)/` - 认证相关页面 (login, register, forgot-password, reset-password)
-  - 其他顶级目录为功能模块页面
-
-- **src/components/**
-  - `ui/` - shadcn/ui 基础组件
-  - `layout/` - 布局组件 (AdminLayout, Header, Sidebar, CommandMenu)
-  - `dashboard/` - 仪表盘组件 (可配置拖拽式仪表盘)
-  - `data-table/` - 数据表格组件
-
-- **src/hooks/** - React Query hooks，每个资源一个文件
-  - use-users, use-files, use-calendar, use-messages, use-documents, use-notifications, use-dashboard
-
-- **src/lib/api/**
-  - `services.ts` - API 服务层，包含所有接口定义和类型导出
-  - `client.ts` - 认证相关 API
-
-- **src/stores/** - Zustand 状态管理
-  - `auth-store.ts` - 认证状态
-  - `dashboard-store.ts` - 仪表盘布局状态
-
-- **src/mock/** - Mock.js 数据生成器，通过 `NEXT_PUBLIC_MOCK=true` 环境变量启用
-
-- **src/providers/** - Context providers
+- src/
+  - app/
+    - (auth)/ login, register, forgot-password, reset-password（认证分组，独立布局）
+    - (dashboard)/ analytics, calendar, docs, documents, files, messages, notifications, profile, settings, users（主业务分组，共享 AdminLayout + TabBar/KeepAlive）
+  - components/
+    - ui/（shadcn/ui 基础组件）
+    - auth/（登录注册等碎片组件）
+    - layout/（AdminLayout、Header、Sidebar、TabBar、PendingOverlay、CommandMenu）
+    - dashboard/（ConfigurableDashboard 可拖拽仪表盘及图表小部件）
+    - data-table/（表格封装）
+  - hooks/（React Query hooks，按资源拆分）
+  - lib/
+    - api/（服务定义、类型、client）
+    - validations/（表单/数据校验 schema）
+  - mock/（Mock.js 数据拦截，`NEXT_PUBLIC_MOCK=true` 启用）
+  - providers/（全局 Provider 组合）
+  - stores/（Zustand：auth、dashboard 布局、tabs/navigation/ui-settings 等）
+  - types/（通用类型）
 
 ### 数据流模式
 

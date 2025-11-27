@@ -24,6 +24,20 @@ import {
 } from "lucide-react"
 import * as React from "react"
 import GridLayout, { Layout } from "react-grid-layout"
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart as ReBarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart as RePieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -44,6 +58,33 @@ import {
   widgetTemplates,
   type WidgetType,
 } from "@/stores/dashboard-store"
+
+const lineData = [
+  { month: "1月", value: 4000 },
+  { month: "2月", value: 3000 },
+  { month: "3月", value: 5000 },
+  { month: "4月", value: 2780 },
+  { month: "5月", value: 1890 },
+  { month: "6月", value: 2390 },
+  { month: "7月", value: 3490 },
+]
+
+const barData = [
+  { name: "周一", pv: 4000, uv: 2400 },
+  { name: "周二", pv: 3000, uv: 1398 },
+  { name: "周三", pv: 2000, uv: 9800 },
+  { name: "周四", pv: 2780, uv: 3908 },
+  { name: "周五", pv: 1890, uv: 4800 },
+  { name: "周六", pv: 2390, uv: 3800 },
+  { name: "周日", pv: 3490, uv: 4300 },
+]
+
+const pieData = [
+  { name: "直接访问", value: 400, color: "hsl(var(--chart-1))" },
+  { name: "搜索引擎", value: 300, color: "hsl(var(--chart-2))" },
+  { name: "社交媒体", value: 200, color: "hsl(var(--chart-3))" },
+  { name: "邮件营销", value: 100, color: "hsl(var(--chart-4))" },
+]
 
 // 图标映射
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -86,12 +127,35 @@ function StatsWidget() {
 // 折线图小部件
 function LineChartWidget() {
   return (
-    <div className="h-full flex items-center justify-center">
-      <div className="text-center text-muted-foreground">
-        <LineChart className="h-16 w-16 mx-auto mb-2 opacity-50" />
-        <p>访问趋势图表</p>
-        <p className="text-xs">（集成 recharts 后显示）</p>
-      </div>
+    <div className="h-[260px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={lineData}>
+          <defs>
+            <linearGradient id="widgetLine" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.35} />
+              <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+          <XAxis dataKey="month" className="text-xs" />
+          <YAxis className="text-xs" />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "hsl(var(--popover))",
+              border: "1px solid hsl(var(--border))",
+              borderRadius: "var(--radius)",
+            }}
+          />
+          <Area
+            type="monotone"
+            dataKey="value"
+            stroke="hsl(var(--chart-1))"
+            fillOpacity={1}
+            fill="url(#widgetLine)"
+            strokeWidth={2}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </div>
   )
 }
@@ -99,12 +163,23 @@ function LineChartWidget() {
 // 柱状图小部件
 function BarChartWidget() {
   return (
-    <div className="h-full flex items-center justify-center">
-      <div className="text-center text-muted-foreground">
-        <BarChart className="h-16 w-16 mx-auto mb-2 opacity-50" />
-        <p>销售统计图表</p>
-        <p className="text-xs">（集成 recharts 后显示）</p>
-      </div>
+    <div className="h-[260px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <ReBarChart data={barData}>
+          <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+          <XAxis dataKey="name" className="text-xs" />
+          <YAxis className="text-xs" />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "hsl(var(--popover))",
+              border: "1px solid hsl(var(--border))",
+              borderRadius: "var(--radius)",
+            }}
+          />
+          <Bar dataKey="pv" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="uv" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+        </ReBarChart>
+      </ResponsiveContainer>
     </div>
   )
 }
@@ -112,11 +187,40 @@ function BarChartWidget() {
 // 饼图小部件
 function PieChartWidget() {
   return (
-    <div className="h-full flex items-center justify-center">
-      <div className="text-center text-muted-foreground">
-        <PieChart className="h-16 w-16 mx-auto mb-2 opacity-50" />
-        <p>占比分析图表</p>
-        <p className="text-xs">（集成 recharts 后显示）</p>
+    <div className="h-[260px] flex flex-col gap-4">
+      <div className="h-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <RePieChart>
+            <Pie
+              data={pieData}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={100}
+              paddingAngle={5}
+              dataKey="value"
+            >
+              {pieData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "hsl(var(--popover))",
+                border: "1px solid hsl(var(--border))",
+                borderRadius: "var(--radius)",
+              }}
+            />
+          </RePieChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="flex flex-wrap justify-center gap-3">
+        {pieData.map((item, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+            <span className="text-xs text-muted-foreground">{item.name}</span>
+          </div>
+        ))}
       </div>
     </div>
   )
