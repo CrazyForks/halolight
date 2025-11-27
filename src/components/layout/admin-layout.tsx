@@ -1,12 +1,17 @@
 "use client"
 
 import { AnimatePresence, motion } from "framer-motion"
+import { ShieldOff } from "lucide-react"
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 import * as React from "react"
 
+import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
 import { useTitle } from "@/hooks"
 import { KeepAliveWrapper } from "@/hooks/use-keep-alive"
+import type { Permission } from "@/lib/api/types"
+import { PermissionGuard } from "@/providers/permission-provider"
 import { useNavigationStore } from "@/stores/navigation-store"
 import { useUiSettingsStore } from "@/stores/ui-settings-store"
 
@@ -18,6 +23,20 @@ import { Sidebar } from "./sidebar"
 import { TabBar } from "./tab-bar"
 
 const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed"
+const permissionRules: Array<{ pattern: RegExp; permission: Permission; label: string }> = [
+  { pattern: /^\/$/, permission: "dashboard:view", label: "仪表盘" },
+  { pattern: /^\/users/, permission: "users:view", label: "用户管理" },
+  { pattern: /^\/analytics/, permission: "analytics:view", label: "数据分析" },
+  { pattern: /^\/documents/, permission: "documents:view", label: "文档管理" },
+  { pattern: /^\/files/, permission: "files:view", label: "文件存储" },
+  { pattern: /^\/messages/, permission: "messages:view", label: "消息中心" },
+  { pattern: /^\/calendar/, permission: "calendar:view", label: "日程安排" },
+  { pattern: /^\/notifications/, permission: "notifications:view", label: "通知中心" },
+  { pattern: /^\/settings/, permission: "settings:view", label: "系统设置" },
+  { pattern: /^\/accounts/, permission: "settings:view", label: "账号与权限" },
+  { pattern: /^\/profile/, permission: "settings:view", label: "个人资料" },
+  { pattern: /^\/docs/, permission: "documents:view", label: "帮助文档" },
+]
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -48,10 +67,16 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     "/calendar": "日程安排",
     "/notifications": "通知中心",
     "/settings": "系统设置",
+    "/accounts": "账号与权限",
     "/profile": "个人资料",
     "/docs": "帮助文档",
   }
   useTitle(titleMap[pathname] ?? "Admin Pro")
+  const matchedRule = React.useMemo(
+    () => permissionRules.find((rule) => rule.pattern.test(pathname)),
+    [pathname]
+  )
+  const requiredPermission = matchedRule?.permission
 
   // 持久化侧边栏状态
   const handleSidebarCollapse = React.useCallback((collapsed: boolean) => {
@@ -95,6 +120,25 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }, [skin])
 
   const marginLeft = isDesktop ? (sidebarCollapsed ? 64 : 240) : 0
+  const guardedContent = requiredPermission ? (
+    <PermissionGuard
+      permission={requiredPermission}
+      fallback={
+        <PermissionFallback
+          permission={requiredPermission}
+          label={matchedRule?.label}
+        />
+      }
+    >
+      <KeepAliveWrapper>
+        {children}
+      </KeepAliveWrapper>
+    </PermissionGuard>
+  ) : (
+    <KeepAliveWrapper>
+      {children}
+    </KeepAliveWrapper>
+  )
 
   return (
     <div className="bg-background min-h-screen lg:h-dvh overflow-hidden flex flex-col">
@@ -149,9 +193,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             transition={{ duration: 0.3 }}
             className="flex-1 p-6 min-h-0 overflow-y-auto"
           >
-            <KeepAliveWrapper>
-              {children}
-            </KeepAliveWrapper>
+            {guardedContent}
           </motion.main>
         </AnimatePresence>
         <AnimatePresence initial={false}>
@@ -179,6 +221,36 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         mode={source === "tabbar-refresh" ? "refresh" : "navigate"}
         delay={source === "tabbar-refresh" ? 0 : undefined}
       />
+    </div>
+  )
+}
+
+function PermissionFallback({
+  permission,
+  label,
+}: {
+  permission?: Permission
+  label?: string
+}) {
+  return (
+    <div className="flex h-full items-center justify-center">
+      <div className="max-w-md rounded-2xl border border-dashed border-border bg-card/40 p-8 text-center shadow-sm">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+          <ShieldOff className="h-6 w-6" />
+        </div>
+        <h2 className="mt-4 text-xl font-semibold">权限不足</h2>
+        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+          您没有访问 {label || "该页面"} 所需的权限
+          {permission ? `（${permission}）` : ""}。请尝试切换账号或联系管理员开通。
+        </p>
+        <div className="mt-6 flex items-center justify-center gap-3">
+          <Button asChild variant="outline">
+            <Link href="/">
+              返回首页
+            </Link>
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }

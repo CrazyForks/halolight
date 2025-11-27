@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   Mail,
   Settings,
+  ShieldCheck,
   Users,
 } from "lucide-react"
 import Link from "next/link"
@@ -24,7 +25,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import type { Permission } from "@/lib/api/types"
 import { cn } from "@/lib/utils"
+import { usePermission } from "@/providers/permission-provider"
 import { useNavigationStore } from "@/stores/navigation-store"
 
 const menuItems = [
@@ -64,11 +67,27 @@ const menuItems = [
     href: "/calendar",
   },
   {
+    title: "账号与权限",
+    icon: ShieldCheck,
+    href: "/accounts",
+  },
+  {
     title: "系统设置",
     icon: Settings,
     href: "/settings",
   },
 ]
+const menuPermissionMap: Record<string, Permission> = {
+  "/": "dashboard:view",
+  "/users": "users:view",
+  "/analytics": "analytics:view",
+  "/documents": "documents:view",
+  "/files": "files:view",
+  "/messages": "messages:view",
+  "/calendar": "calendar:view",
+  "/accounts": "settings:view",
+  "/settings": "settings:view",
+}
 
 interface SidebarProps {
   collapsed: boolean
@@ -79,14 +98,17 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const startNavigation = useNavigationStore((state) => state.startNavigation)
+  const { hasPermission } = usePermission()
 
   const handleNavigate = React.useCallback(
     (href: string, label: string) => {
+      const required = menuPermissionMap[href]
+      if (required && !hasPermission(required)) return
       if (pathname === href) return
       startNavigation({ path: href, label, source: "sidebar" })
       router.push(href)
     },
-    [pathname, router, startNavigation]
+    [hasPermission, pathname, router, startNavigation]
   )
 
   return (
@@ -138,6 +160,8 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
             {menuItems.map((item) => {
               const isActive = pathname === item.href
               const Icon = item.icon
+              const required = menuPermissionMap[item.href]
+              const allowed = required ? hasPermission(required) : true
 
               const linkContent = (
                 <Link
@@ -148,11 +172,14 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
                   }}
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
-                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                    isActive
+                    allowed
+                      ? "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      : "opacity-60 cursor-not-allowed",
+                    isActive && allowed
                       ? "bg-sidebar-accent text-sidebar-accent-foreground"
                       : "text-sidebar-foreground/70"
                   )}
+                  aria-disabled={!allowed}
                 >
                   <motion.div
                     whileHover={{ scale: 1.05 }}

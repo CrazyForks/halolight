@@ -32,7 +32,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = React.useState(false)
   const [profileData, setProfileData] = React.useState({
     name: user?.name || "管理员",
-    email: user?.email || "admin@example.com",
+    email: user?.email || "admin@halolight.h7ml.cn",
     phone: "138-8888-8888",
     address: "北京市朝阳区",
     company: "科技有限公司",

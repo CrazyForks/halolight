@@ -86,6 +86,33 @@ const pieData = [
   { name: "邮件营销", value: 100, color: "hsl(var(--chart-4))" },
 ]
 
+// 按视口宽度换算列数
+const getColumnsForWidth = (width: number) => {
+  if (width < 640) return 1
+  if (width < 1024) return 6
+  return 12
+}
+
+// 根据列数调整布局，移动端按顺序纵向堆叠
+const getResponsiveLayout = (baseLayout: DashboardLayout[], cols: number): DashboardLayout[] => {
+  if (cols <= 1) {
+    let currentY = 0
+    return baseLayout.map((item) => {
+      const height = Math.max(item.h, item.minH ?? 1)
+      const next = { ...item, x: 0, y: currentY, w: 1, h: height }
+      currentY += height
+      return next
+    })
+  }
+
+  return baseLayout.map((item) => {
+    const width = Math.min(item.w, cols)
+    const maxX = Math.max(cols - width, 0)
+    const x = Math.min(item.x, maxX)
+    return { ...item, w: width, x }
+  })
+}
+
 // 图标映射
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   BarChart3,
@@ -109,7 +136,7 @@ function StatsWidget() {
   ]
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 h-full">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 h-full">
       {stats.map((stat) => (
         <div key={stat.label} className="flex flex-col justify-center">
           <p className="text-sm text-muted-foreground">{stat.label}</p>
@@ -229,9 +256,9 @@ function PieChartWidget() {
 // 最近用户小部件
 function RecentUsersWidget() {
   const users = [
-    { name: "张三", email: "zhangsan@example.com", time: "刚刚" },
-    { name: "李四", email: "lisi@example.com", time: "5分钟前" },
-    { name: "王五", email: "wangwu@example.com", time: "10分钟前" },
+    { name: "张三", email: "zhangsan@halolight.h7ml.cn", time: "刚刚" },
+    { name: "李四", email: "lisi@halolight.h7ml.cn", time: "5分钟前" },
+    { name: "王五", email: "wangwu@halolight.h7ml.cn", time: "10分钟前" },
   ]
 
   return (
@@ -317,7 +344,7 @@ function QuickActionsWidget() {
   ]
 
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
       {actions.map((action) => (
         <Button key={action.label} variant="outline" className="flex flex-col h-auto py-3">
           <action.icon className="h-5 w-5 mb-1" />
@@ -406,6 +433,14 @@ export function ConfigurableDashboard() {
 
   const [containerWidth, setContainerWidth] = React.useState(1200)
   const containerRef = React.useRef<HTMLDivElement>(null)
+  const columns = React.useMemo(() => getColumnsForWidth(containerWidth), [containerWidth])
+  const isMobile = columns === 1
+  const rowHeight = isMobile ? 140 : 90
+  const responsiveLayout = React.useMemo(
+    () => getResponsiveLayout(layouts, columns),
+    [columns, layouts]
+  )
+  const canEditLayout = !isMobile && isEditing && columns === 12
 
   // 监听容器宽度变化
   React.useEffect(() => {
@@ -421,6 +456,7 @@ export function ConfigurableDashboard() {
   }, [])
 
   const handleLayoutChange = (newLayout: Layout[]) => {
+    if (!isEditing || columns !== 12) return
     setLayouts(newLayout as DashboardLayout[])
   }
 
@@ -500,13 +536,13 @@ export function ConfigurableDashboard() {
       {/* 网格布局 */}
       <GridLayout
         className="layout"
-        layout={layouts}
-        cols={12}
-        rowHeight={80}
+        layout={responsiveLayout}
+        cols={columns}
+        rowHeight={rowHeight}
         width={containerWidth}
         onLayoutChange={handleLayoutChange}
-        isDraggable={isEditing}
-        isResizable={isEditing}
+        isDraggable={canEditLayout}
+        isResizable={canEditLayout}
         draggableHandle=".drag-handle"
         compactType="vertical"
         preventCollision={false}

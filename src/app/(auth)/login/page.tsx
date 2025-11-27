@@ -31,7 +31,7 @@ export default function LoginPage() {
   useTitle("登录")
 
   const [formData, setFormData] = React.useState({
-    email: "admin@example.com",
+    email: "admin@halolight.h7ml.cn",
     password: "123456",
     remember: false,
   })
@@ -328,7 +328,7 @@ export default function LoginPage() {
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors z-10" />
                       <InputClear
                         type="email"
-                        placeholder="your@email.com"
+                        placeholder="your@email.h7ml.cn"
                         className="pl-10 h-12 text-sm border-border/50 focus:border-primary/50 rounded-xl transition-all"
                         value={formData.email}
                         onChange={(value) =>
@@ -406,7 +406,7 @@ export default function LoginPage() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => setFormData({ ...formData, email: "admin@example.com", password: "123456" })}
+                      onClick={() => setFormData({ ...formData, email: "admin@halolight.h7ml.cn", password: "123456" })}
                       className="h-7 px-3 text-xs text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg"
                     >
                       <User className="h-3 w-3 mr-1.5" />
@@ -458,8 +458,9 @@ export default function LoginPage() {
                     立即注册
                   </Link>
                 </p>
-                <p className="text-xs text-muted-foreground/60 text-center">
-                  测试账号：admin@example.com / 123456
+                <p className="text-xs text-muted-foreground/60 text-center leading-relaxed">
+                  测试账号：admin@halolight.h7ml.cn（管理员） / ops@halolight.h7ml.cn（运营） / editor@halolight.h7ml.cn（编辑）{" "}
+                  密码均为 123456
                 </p>
               </CardFooter>
             </Card>

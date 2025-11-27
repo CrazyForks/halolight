@@ -31,7 +31,7 @@ interface HeaderProps {
 
 export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
   const router = useRouter()
-  const { user, logout } = useAuthStore()
+  const { user, accounts, activeAccountId, switchAccount, logout } = useAuthStore()
   const startNavigation = useNavigationStore((state) => state.startNavigation)
   const errors = useErrorStore((state) => state.errors)
   const unreadErrors = useErrorStore((state) => state.unreadCount())
@@ -47,6 +47,17 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
     startNavigation({ path: href, label, source: "header" })
     router.push(href)
   }
+
+  const handleSwitchAccount = async (accountId: string) => {
+    if (accountId === activeAccountId) return
+    try {
+      await switchAccount(accountId)
+    } catch (error) {
+      console.error("切换账号失败", error)
+    }
+  }
+
+  const accountList = accounts.length > 0 ? accounts : user ? [user] : []
 
   return (
     <motion.header
@@ -262,10 +273,47 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium">{user?.name || "管理员"}</p>
                 <p className="text-xs text-muted-foreground">
-                  {user?.email || "admin@example.com"}
+                  {user?.email || "admin@halolight.h7ml.cn"}
                 </p>
               </div>
             </DropdownMenuLabel>
+            {accountList.length > 0 && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-xs text-muted-foreground">
+                  快速切换账号
+                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  {accountList.map((account) => (
+                    <DropdownMenuItem
+                      key={account.id}
+                      className="cursor-pointer gap-2"
+                      onClick={() => handleSwitchAccount(account.id)}
+                    >
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={account.avatar} alt={account.name} />
+                        <AvatarFallback>
+                          {account.name?.charAt(0) || "A"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium leading-tight">
+                          {account.name}
+                        </span>
+                        <span className="text-[11px] text-muted-foreground leading-tight">
+                          {account.role?.label || account.role?.name} · {account.email}
+                        </span>
+                      </div>
+                      {activeAccountId === account.id && (
+                        <Badge variant="secondary" className="ml-auto">
+                          当前
+                        </Badge>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
+              </>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               asChild

@@ -70,7 +70,7 @@ export default function SettingsPage() {
   const [profileData, setProfileData] = React.useState({
     name: "管理员",
     username: "admin",
-    email: "admin@example.com",
+    email: "admin@halolight.h7ml.cn",
     bio: "系统管理员",
   })
 
