@@ -416,7 +416,6 @@ export default function UsersPage() {
         >
           <div>
             <h1 className="text-3xl font-bold tracking-tight">用户管理</h1>
-            <p className="text-muted-foreground">管理系统用户、角色和权限</p>
           </div>
           <PermissionGuard permission="users:create">
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>

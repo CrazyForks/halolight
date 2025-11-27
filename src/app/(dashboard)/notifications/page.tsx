@@ -93,9 +93,6 @@ export default function NotificationsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">通知中心</h1>
-            <p className="text-muted-foreground">
-              查看和管理所有系统通知
-            </p>
           </div>
           <div className="flex gap-2">
             <Button

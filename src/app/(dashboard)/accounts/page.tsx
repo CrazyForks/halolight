@@ -32,9 +32,6 @@ export default function AccountsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">账号与权限</h1>
-        <p className="text-muted-foreground">
-          查看可用账号、角色和权限，按需切换身份。
-        </p>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">

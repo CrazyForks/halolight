@@ -164,7 +164,6 @@ export default function CalendarPage() {
         >
           <div>
             <h1 className="text-3xl font-bold tracking-tight">日程安排</h1>
-            <p className="text-muted-foreground">管理您的日程和任务</p>
           </div>
           <Dialog open={isAddEventOpen} onOpenChange={setIsAddEventOpen}>
             <DialogTrigger asChild>

@@ -103,9 +103,6 @@ export default function AnalyticsPage() {
         transition={{ duration: 0.3 }}
       >
         <h1 className="text-3xl font-bold tracking-tight">数据分析</h1>
-        <p className="text-muted-foreground">
-          深入了解您的网站流量和用户行为
-        </p>
       </motion.div>
 
       {/* 指标卡片 */}

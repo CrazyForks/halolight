@@ -184,7 +184,6 @@ export default function MessagesPage() {
         >
           <div>
             <h1 className="text-3xl font-bold tracking-tight">消息中心</h1>
-            <p className="text-muted-foreground">管理您的消息和通知</p>
           </div>
           <Dialog open={isComposeOpen} onOpenChange={setIsComposeOpen}>
             <DialogTrigger asChild>

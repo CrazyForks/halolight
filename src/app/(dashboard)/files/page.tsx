@@ -154,7 +154,6 @@ export default function FilesPage() {
         >
           <div>
             <h1 className="text-3xl font-bold tracking-tight">文件存储</h1>
-            <p className="text-muted-foreground">管理您的云端文件和文件夹</p>
           </div>
           <div className="flex items-center gap-2">
             <Dialog open={isNewFolderOpen} onOpenChange={setIsNewFolderOpen}>

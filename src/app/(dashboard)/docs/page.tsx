@@ -128,9 +128,6 @@ export default function DocsPage() {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">帮助文档</h1>
-            <p className="text-muted-foreground">
-              查找使用指南、教程和常见问题解答
-            </p>
           </div>
         </div>
 

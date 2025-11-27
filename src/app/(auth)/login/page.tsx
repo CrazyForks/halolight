@@ -471,6 +471,23 @@ export default function LoginPage() {
                     立即注册
                   </Link>
                 </p>
+                <p className="text-xs sm:text-sm text-muted-foreground/70 text-center leading-relaxed">
+                  阅读我们的{" "}
+                  <Link
+                    href="/terms"
+                    className="text-primary hover:text-primary/80 font-semibold transition-colors"
+                  >
+                    服务条款
+                  </Link>{" "}
+                  和{" "}
+                  <Link
+                    href="/privacy"
+                    className="text-primary hover:text-primary/80 font-semibold transition-colors"
+                  >
+                    隐私政策
+                  </Link>{" "}
+                  了解更多信息。
+                </p>
                 {process.env.NEXT_PUBLIC_SHOW_DEMO_HINT === "true" && (
                   <p className="text-xs text-muted-foreground/60 text-center leading-relaxed">
                     测试账号请点击上方&ldquo;测试账号&rdquo;按钮自动填充

@@ -15,8 +15,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
-import { findPermissionRule, getRouteTitle } from "@/config/routes"
-import { useTitle } from "@/hooks"
+import { findPermissionRule } from "@/config/routes"
 import { KeepAliveWrapper } from "@/hooks/use-keep-alive"
 import type { Permission } from "@/lib/api/types"
 import { PermissionGuard } from "@/providers/permission-provider"
@@ -51,10 +50,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const { pendingPath, label, source, finishNavigation } = useNavigationStore()
   const { showFooter, showTabBar, skin } = useUiSettingsStore()
   const pathname = usePathname()
-
-  // 使用集中配置获取页面标题
-  const pageTitle = React.useMemo(() => getRouteTitle(pathname), [pathname])
-  useTitle(pageTitle)
 
   // 使用集中配置获取权限规则
   const matchedRule = React.useMemo(
@@ -214,6 +209,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* 命令面板 */}
       <CommandMenu open={commandOpen} onOpenChange={setCommandOpen} />
 
+      {/* 返回顶部 */}
+      <BackToTop
+        threshold={200}
+        duration={400}
+        scrollContainerSelector="#main-scroll-container"
+      />
+
+      {/* 挂起加载 */}
       <PendingOverlay
         visible={!!pendingPath}
         label={label}
@@ -221,12 +224,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         delay={source === "tabbar-refresh" ? 0 : undefined}
       />
 
-      {/* 返回顶部 */}
-      <BackToTop
-        threshold={200}
-        duration={400}
-        scrollContainerSelector="#main-scroll-container"
-      />
     </div>
   )
 }

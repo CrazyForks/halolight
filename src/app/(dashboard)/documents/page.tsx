@@ -161,7 +161,6 @@ export default function DocumentsPage() {
         >
           <div>
             <h1 className="text-3xl font-bold tracking-tight">文档管理</h1>
-            <p className="text-muted-foreground">管理和组织您的所有文档</p>
           </div>
           <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
             <DialogTrigger asChild>

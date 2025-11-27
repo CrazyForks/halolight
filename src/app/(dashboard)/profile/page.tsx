@@ -64,7 +64,6 @@ export default function ProfilePage() {
     <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">个人资料</h1>
-          <p className="text-muted-foreground">管理您的账户信息和偏好设置</p>
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">

@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { MockProvider } from "@/components/mock-provider"
+import { TdkManager } from "@/components/tdk-manager"
 import { CookieConsent } from "@/components/ui/cookie-consent"
 import { AuthProvider } from "@/providers/auth-provider"
 import { ErrorProvider } from "@/providers/error-provider"
@@ -35,7 +36,10 @@ export function AppProviders({ children }: AppProvidersProps) {
           <AuthProvider>
             <PermissionProvider>
               <WebSocketProvider>
-                <ErrorProvider>{children}</ErrorProvider>
+                <ErrorProvider>
+                  <TdkManager />
+                  {children}
+                </ErrorProvider>
               </WebSocketProvider>
             </PermissionProvider>
           </AuthProvider>

@@ -28,6 +28,8 @@ export const PUBLIC_ROUTES = [
   "/register",
   "/forgot-password",
   "/reset-password",
+  "/terms",
+  "/privacy",
 ] as const
 
 /** 认证路由 - 已登录用户不能访问（如登录页） */

@@ -96,9 +96,6 @@ export default function SettingsPage() {
           transition={{ duration: 0.3 }}
         >
           <h1 className="text-3xl font-bold tracking-tight">系统设置</h1>
-          <p className="text-muted-foreground">
-            管理您的账户设置和系统偏好
-          </p>
         </motion.div>
 
         <div className="grid gap-6 lg:grid-cols-4">

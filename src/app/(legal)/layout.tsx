@@ -13,10 +13,9 @@ interface LegalLayoutProps {
 
 export default function LegalLayout({ children }: LegalLayoutProps) {
   return (
-    <>
-      {/* 顶部导航栏 */}
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-        <div className="container mx-auto flex h-14 max-w-4xl items-center px-4">
+        <div className="mx-auto flex h-14 max-w-6xl items-center px-4">
           <Button variant="ghost" size="sm" asChild>
             <Link href="/" className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
@@ -33,11 +32,11 @@ export default function LegalLayout({ children }: LegalLayoutProps) {
         </div>
       </header>
 
-      {/* 主内容区 */}
-      {children}
+      <main className="flex-1 w-full">
+        <div className="mx-auto w-full max-w-6xl px-4 py-6">{children}</div>
+      </main>
 
-      {/* 返回顶部按钮 - 监听 window 滚动 */}
       <BackToTop threshold={200} duration={400} />
-    </>
+    </div>
   )
 }
