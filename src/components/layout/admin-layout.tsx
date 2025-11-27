@@ -139,7 +139,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <SheetContent
           side="left"
-          className="w-64 p-0 [&_[data-slot=sheet-close]]:hidden"
+          className="w-full max-w-[320px] p-0"
+          showCloseButton={false}
         >
           <SheetHeader className="sr-only">
             <SheetTitle>移动导航</SheetTitle>
