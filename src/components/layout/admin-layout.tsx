@@ -139,7 +139,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <SheetContent
           side="left"
-          className="w-full max-w-[320px] p-0"
+          className="w-[280px] min-w-[220px] p-0"
           showCloseButton={false}
         >
           <SheetHeader className="sr-only">
