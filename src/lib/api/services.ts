@@ -1,4 +1,25 @@
 // API 服务基础配置
+import type {
+  Activity,
+  CalendarEvent,
+  Conversation,
+  DashboardStats,
+  Document,
+  FileItem,
+  ListData,
+  LoginResponse,
+  Message,
+  Notification,
+  Order,
+  Product,
+  Role,
+  SalesData,
+  StorageInfo,
+  SystemOverview,
+  User,
+  VisitData,
+} from "./types"
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "/api"
 
 // 通用请求封装
@@ -30,7 +51,7 @@ export const userService = {
   // 获取用户列表
   getUsers: (params?: { page?: number; pageSize?: number; keyword?: string }) => {
     const query = new URLSearchParams(params as Record<string, string>).toString()
-    return request<{ list: User[]; total: number }>(`/users${query ? `?${query}` : ""}`)
+    return request<ListData<User>>(`/users${query ? `?${query}` : ""}`)
   },
 
   // 获取单个用户
@@ -56,7 +77,7 @@ export const userService = {
 
   // 登录
   login: (email: string, password: string) =>
-    request<{ user: User; token: string; expiresIn: number }>("/user/login", {
+    request<LoginResponse>("/user/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
     }),
@@ -247,202 +268,24 @@ export const fileService = {
     }),
 }
 
-// 类型定义
-export interface User {
-  id: string
-  name: string
-  email: string
-  phone?: string
-  avatar?: string
-  role: Role
-  status: "active" | "inactive" | "suspended"
-  department?: string
-  position?: string
-  bio?: string
-  createdAt: string
-  lastLoginAt?: string
-}
-
-export interface Role {
-  id: string
-  name: string
-  label: string
-  permissions: string[]
-}
-
-export interface DashboardStats {
-  totalUsers: number
-  totalRevenue: number
-  totalOrders: number
-  conversionRate: number
-  userGrowth: number
-  revenueGrowth: number
-  orderGrowth: number
-  rateGrowth: number
-}
-
-export interface VisitData {
-  date: string
-  visits: number
-  uniqueVisitors: number
-  pageViews: number
-}
-
-export interface SalesData {
-  month: string
-  sales: number
-  profit: number
-}
-
-export interface Product {
-  id: string
-  name: string
-  category: string
-  price: number
-  sales: number
-  stock: number
-  image: string
-}
-
-export interface Order {
-  id: string
-  orderNo: string
-  customer: string
-  amount: number
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled"
-  createdAt: string
-}
-
-export interface Activity {
-  id: string
-  user: string
-  avatar: string
-  action: string
-  target: string
-  time: string
-}
-
-export interface SystemOverview {
-  cpu: number
-  memory: number
-  disk: number
-  network: number
-  uptime: number
-  requests: number
-  errors: number
-  responseTime: number
-}
-
-export interface Notification {
-  id: string
-  type: "system" | "message" | "task" | "alert"
-  title: string
-  content: string
-  read: boolean
-  createdAt: string
-  sender?: {
-    id: string
-    name: string
-    avatar: string
-  }
-}
-
-export interface Document {
-  id: string
-  name: string
-  type: "pdf" | "doc" | "image" | "spreadsheet" | "code" | "other"
-  size: number
-  folder: string
-  content?: string
-  author: {
-    id: string
-    name: string
-    avatar: string
-  }
-  shared: boolean
-  tags: string[]
-  views: number
-  createdAt: string
-  updatedAt: string
-  collaborators?: Array<{
-    id: string
-    name: string
-    avatar: string
-  }>
-}
-
-export interface Conversation {
-  id: string
-  type: "private" | "group"
-  name: string
-  avatar: string
-  lastMessage: string
-  lastMessageTime: string
-  unreadCount: number
-  online: boolean
-  members: Array<{
-    id: string
-    name: string
-    avatar: string
-  }>
-}
-
-export interface Message {
-  id: string
-  conversationId: string
-  sender: {
-    id: string
-    name: string
-    avatar: string
-  }
-  type: "text" | "image" | "file"
-  content: string
-  createdAt: string
-  read: boolean
-}
-
-export interface CalendarEvent {
-  id: string
-  title: string
-  description?: string
-  start: string
-  end: string
-  type: "meeting" | "task" | "reminder" | "holiday"
-  color: string
-  allDay: boolean
-  location?: string
-  attendees?: Array<{
-    id: string
-    name: string
-    avatar: string
-    status: "accepted" | "declined" | "pending"
-  }>
-  reminders?: string[]
-  createdAt: string
-}
-
-export interface FileItem {
-  id: string
-  name: string
-  type: "folder" | "image" | "video" | "audio" | "archive" | "document"
-  size: number | null
-  items: number | null
-  path: string
-  mimeType: string
-  thumbnail: string | null
-  createdAt: string
-  updatedAt: string
-}
-
-export interface StorageInfo {
-  used: number
-  total: number
-  breakdown: {
-    images: number
-    videos: number
-    audio: number
-    documents: number
-    archives: number
-    others: number
-  }
-}
+// 重新导出类型供外部使用
+export type {
+  Activity,
+  CalendarEvent,
+  Conversation,
+  DashboardStats,
+  Document,
+  FileItem,
+  ListData,
+  LoginResponse,
+  Message,
+  Notification,
+  Order,
+  Product,
+  Role,
+  SalesData,
+  StorageInfo,
+  SystemOverview,
+  User,
+  VisitData,
+} from "./types"

@@ -336,7 +336,12 @@ export function TabBar() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity ml-1 shrink-0 hover:bg-muted-foreground/20 rounded-sm"
+                      className={cn(
+                        "h-4 w-4 p-0 transition-opacity ml-1 shrink-0 hover:bg-muted-foreground/20 rounded-sm",
+                        activeTabId === tab.id
+                          ? "opacity-100"
+                          : "opacity-0 group-hover:opacity-100 sm:opacity-0"
+                      )}
                       onClick={(e) => handleCloseTab(e, tab)}
                     >
                       <X className="h-3 w-3" />

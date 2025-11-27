@@ -6,8 +6,10 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import * as React from "react"
 
+import { BackToTop } from "@/components/ui/back-to-top"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { findPermissionRule, getRouteTitle } from "@/config/routes"
 import { useTitle } from "@/hooks"
 import { KeepAliveWrapper } from "@/hooks/use-keep-alive"
 import type { Permission } from "@/lib/api/types"
@@ -23,20 +25,6 @@ import { Sidebar } from "./sidebar"
 import { TabBar } from "./tab-bar"
 
 const SIDEBAR_COLLAPSED_KEY = "sidebar-collapsed"
-const permissionRules: Array<{ pattern: RegExp; permission: Permission; label: string }> = [
-  { pattern: /^\/$/, permission: "dashboard:view", label: "仪表盘" },
-  { pattern: /^\/users/, permission: "users:view", label: "用户管理" },
-  { pattern: /^\/analytics/, permission: "analytics:view", label: "数据分析" },
-  { pattern: /^\/documents/, permission: "documents:view", label: "文档管理" },
-  { pattern: /^\/files/, permission: "files:view", label: "文件存储" },
-  { pattern: /^\/messages/, permission: "messages:view", label: "消息中心" },
-  { pattern: /^\/calendar/, permission: "calendar:view", label: "日程安排" },
-  { pattern: /^\/notifications/, permission: "notifications:view", label: "通知中心" },
-  { pattern: /^\/settings/, permission: "settings:view", label: "系统设置" },
-  { pattern: /^\/accounts/, permission: "settings:view", label: "账号与权限" },
-  { pattern: /^\/profile/, permission: "settings:view", label: "个人资料" },
-  { pattern: /^\/docs/, permission: "documents:view", label: "帮助文档" },
-]
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -57,23 +45,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const { pendingPath, label, source, finishNavigation } = useNavigationStore()
   const { showFooter, showTabBar, skin } = useUiSettingsStore()
   const pathname = usePathname()
-  const titleMap: Record<string, string> = {
-    "/": "仪表盘",
-    "/users": "用户管理",
-    "/analytics": "数据分析",
-    "/documents": "文档管理",
-    "/files": "文件存储",
-    "/messages": "消息中心",
-    "/calendar": "日程安排",
-    "/notifications": "通知中心",
-    "/settings": "系统设置",
-    "/accounts": "账号与权限",
-    "/profile": "个人资料",
-    "/docs": "帮助文档",
-  }
-  useTitle(titleMap[pathname] ?? "Admin Pro")
+
+  // 使用集中配置获取页面标题
+  const pageTitle = React.useMemo(() => getRouteTitle(pathname), [pathname])
+  useTitle(pageTitle)
+
+  // 使用集中配置获取权限规则
   const matchedRule = React.useMemo(
-    () => permissionRules.find((rule) => rule.pattern.test(pathname)),
+    () => findPermissionRule(pathname),
     [pathname]
   )
   const requiredPermission = matchedRule?.permission
@@ -119,7 +98,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     root.dataset.skin = skin
   }, [skin])
 
-  const marginLeft = isDesktop ? (sidebarCollapsed ? 64 : 240) : 0
+  const marginLeft = isDesktop ? (sidebarCollapsed ? 64 : 220) : 0
   const guardedContent = requiredPermission ? (
     <PermissionGuard
       permission={requiredPermission}
@@ -187,6 +166,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
         <AnimatePresence mode="wait">
           <motion.main
+            id="main-scroll-container"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -220,6 +200,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         label={label}
         mode={source === "tabbar-refresh" ? "refresh" : "navigate"}
         delay={source === "tabbar-refresh" ? 0 : undefined}
+      />
+
+      {/* 返回顶部 */}
+      <BackToTop
+        threshold={200}
+        duration={400}
+        scrollContainerSelector="#main-scroll-container"
       />
     </div>
   )

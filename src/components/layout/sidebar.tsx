@@ -1,18 +1,7 @@
 "use client"
 
 import { AnimatePresence,motion } from "framer-motion"
-import {
-  BarChart3,
-  Calendar,
-  ChevronLeft,
-  FileText,
-  FolderOpen,
-  LayoutDashboard,
-  Mail,
-  Settings,
-  ShieldCheck,
-  Users,
-} from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import * as React from "react"
@@ -25,69 +14,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import type { Permission } from "@/lib/api/types"
+import { getMenuPermission, MENU_ITEMS } from "@/config/routes"
 import { cn } from "@/lib/utils"
 import { usePermission } from "@/providers/permission-provider"
 import { useNavigationStore } from "@/stores/navigation-store"
-
-const menuItems = [
-  {
-    title: "仪表盘",
-    icon: LayoutDashboard,
-    href: "/",
-  },
-  {
-    title: "用户管理",
-    icon: Users,
-    href: "/users",
-  },
-  {
-    title: "数据分析",
-    icon: BarChart3,
-    href: "/analytics",
-  },
-  {
-    title: "文档管理",
-    icon: FileText,
-    href: "/documents",
-  },
-  {
-    title: "文件存储",
-    icon: FolderOpen,
-    href: "/files",
-  },
-  {
-    title: "消息中心",
-    icon: Mail,
-    href: "/messages",
-  },
-  {
-    title: "日程安排",
-    icon: Calendar,
-    href: "/calendar",
-  },
-  {
-    title: "账号与权限",
-    icon: ShieldCheck,
-    href: "/accounts",
-  },
-  {
-    title: "系统设置",
-    icon: Settings,
-    href: "/settings",
-  },
-]
-const menuPermissionMap: Record<string, Permission> = {
-  "/": "dashboard:view",
-  "/users": "users:view",
-  "/analytics": "analytics:view",
-  "/documents": "documents:view",
-  "/files": "files:view",
-  "/messages": "messages:view",
-  "/calendar": "calendar:view",
-  "/accounts": "settings:view",
-  "/settings": "settings:view",
-}
 
 interface SidebarProps {
   collapsed: boolean
@@ -102,7 +32,7 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
 
   const handleNavigate = React.useCallback(
     (href: string, label: string) => {
-      const required = menuPermissionMap[href]
+      const required = getMenuPermission(href)
       if (required && !hasPermission(required)) return
       if (pathname === href) return
       startNavigation({ path: href, label, source: "sidebar" })
@@ -115,7 +45,7 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
     <TooltipProvider delayDuration={0}>
       <motion.aside
         initial={false}
-        animate={{ width: collapsed ? 64 : 240 }}
+        animate={{ width: collapsed ? 64 : 220 }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
         className={cn(
           "fixed left-0 top-0 z-40 h-screen border-r border-border bg-sidebar",
@@ -157,10 +87,10 @@ export function Sidebar({ collapsed, onCollapsedChange }: SidebarProps) {
         {/* 导航菜单 */}
         <ScrollArea className="flex-1 py-4">
           <nav className="space-y-1 px-2">
-            {menuItems.map((item) => {
+            {MENU_ITEMS.map((item) => {
               const isActive = pathname === item.href
               const Icon = item.icon
-              const required = menuPermissionMap[item.href]
+              const required = getMenuPermission(item.href)
               const allowed = required ? hasPermission(required) : true
 
               const linkContent = (

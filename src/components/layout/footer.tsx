@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion"
 import {
-  ArrowUp,
   FileText,
   Github,
   Globe,
@@ -17,7 +16,6 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import * as React from "react"
 
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { projectInfo } from "@/lib/project-info"
 import { useNavigationStore } from "@/stores/navigation-store"
@@ -38,7 +36,6 @@ const socialLinks = [
 ]
 
 export function Footer() {
-  const [showBackToTop, setShowBackToTop] = React.useState(false)
   const router = useRouter()
   const pathname = usePathname()
   const { pendingPath, label, source, startNavigation } = useNavigationStore()
@@ -54,18 +51,6 @@ export function Footer() {
     "/settings": "系统设置",
     "/profile": "个人资料",
     "/docs": "帮助文档",
-  }
-
-  React.useEffect(() => {
-    const handleScroll = () => {
-      setShowBackToTop(window.scrollY > 300)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
   const handleQuickLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -272,35 +257,15 @@ export function Footer() {
           </div>
 
           <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <Link href="/docs" className="hover:text-primary transition-colors">
+            <Link href="/privacy" className="hover:text-primary transition-colors">
               隐私政策
             </Link>
-            <Link href="/docs" className="hover:text-primary transition-colors">
+            <Link href="/terms" className="hover:text-primary transition-colors">
               服务条款
             </Link>
           </div>
         </motion.div>
       </div>
-
-      {/* 回到顶部按钮 */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{
-          opacity: showBackToTop ? 1 : 0,
-          scale: showBackToTop ? 1 : 0.8,
-          pointerEvents: showBackToTop ? "auto" : "none",
-        }}
-        transition={{ duration: 0.2 }}
-        className="fixed bottom-6 right-6 z-50"
-      >
-        <Button
-          size="icon"
-          onClick={scrollToTop}
-          className="h-10 w-10 rounded-full bg-linear-to-r from-blue-600 to-indigo-600 shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transition-all"
-        >
-          <ArrowUp className="h-4 w-4" />
-        </Button>
-      </motion.div>
 
       <PendingOverlay
         visible={!!pendingPath}

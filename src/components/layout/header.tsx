@@ -38,26 +38,36 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
   const markErrorsRead = useErrorStore((state) => state.markAllRead)
   const clearErrors = useErrorStore((state) => state.clear)
 
-  const handleLogout = async () => {
+  // 优化：使用 useCallback 缓存回调函数
+  const handleLogout = React.useCallback(async () => {
     await logout()
     router.push("/login")
-  }
+  }, [logout, router])
 
-  const handleNavigate = (href: string, label: string) => {
+  const handleNavigate = React.useCallback((href: string, label: string) => {
     startNavigation({ path: href, label, source: "header" })
     router.push(href)
-  }
+  }, [startNavigation, router])
 
-  const handleSwitchAccount = async (accountId: string) => {
+  const handleSwitchAccount = React.useCallback(async (accountId: string) => {
     if (accountId === activeAccountId) return
     try {
       await switchAccount(accountId)
-    } catch (error) {
-      console.error("切换账号失败", error)
+    } catch {
+      // 错误已在 store 中处理
     }
-  }
+  }, [activeAccountId, switchAccount])
 
-  const accountList = accounts.length > 0 ? accounts : user ? [user] : []
+  const handleClearErrors = React.useCallback(() => {
+    markErrorsRead()
+    clearErrors()
+  }, [markErrorsRead, clearErrors])
+
+  // 优化：使用 useMemo 缓存账号列表
+  const accountList = React.useMemo(
+    () => (accounts.length > 0 ? accounts : user ? [user] : []),
+    [accounts, user]
+  )
 
   return (
     <motion.header
@@ -205,10 +215,7 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
                 variant="ghost"
                 size="sm"
                 className="h-7 px-2 text-xs"
-                onClick={() => {
-                  markErrorsRead()
-                  clearErrors()
-                }}
+                onClick={handleClearErrors}
               >
                 清空
               </Button>

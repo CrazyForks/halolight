@@ -39,11 +39,25 @@ const typeColors: Record<string, string> = {
   holiday: "bg-purple-500",
 }
 
+/**
+ * 获取事件类型对应的颜色
+ */
+function getEventTypeColor(type?: string): string {
+  return type && typeColors[type] ? typeColors[type] : "bg-muted-foreground"
+}
+
 const typeLabels: Record<string, string> = {
   meeting: "会议",
   task: "任务",
   reminder: "提醒",
   holiday: "假日",
+}
+
+/**
+ * 获取事件类型对应的标签
+ */
+function getEventTypeLabel(type?: string): string {
+  return type && typeLabels[type] ? typeLabels[type] : "其他"
 }
 
 const weekDays = ["日", "一", "二", "三", "四", "五", "六"]
@@ -329,7 +343,7 @@ export default function CalendarPage() {
                                     key={i}
                                     className={cn(
                                       "h-0.5 w-0.5 sm:h-1 sm:w-1 rounded-full",
-                                      isSelected ? "bg-primary-foreground" : typeColors[event.type]
+                                      isSelected ? "bg-primary-foreground" : getEventTypeColor(event.type)
                                     )}
                                   />
                                 ))}
@@ -386,7 +400,7 @@ export default function CalendarPage() {
                           <div
                             className={cn(
                               "absolute left-0 top-0 bottom-0 w-1 rounded-l-lg",
-                              typeColors[event.type]
+                              getEventTypeColor(event.type)
                             )}
                           />
                           <div className="flex items-start justify-between">
@@ -413,7 +427,7 @@ export default function CalendarPage() {
                                 </div>
                               )}
                             </div>
-                            <Badge variant="secondary">{typeLabels[event.type]}</Badge>
+                            <Badge variant="secondary">{getEventTypeLabel(event.type)}</Badge>
                           </div>
                         </motion.div>
                       ))}
@@ -477,14 +491,14 @@ export default function CalendarPage() {
                         <div
                           className={cn(
                             "w-0.5 h-full rounded-full mt-1 shrink-0",
-                            typeColors[event.type]
+                            getEventTypeColor(event.type)
                           )}
                         />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
                             <h4 className="font-medium text-sm truncate">{event.title}</h4>
                             <Badge variant="secondary" className="text-xs shrink-0 ml-2">
-                              {typeLabels[event.type]}
+                              {getEventTypeLabel(event.type)}
                             </Badge>
                           </div>
                           <div className="space-y-1">
@@ -546,7 +560,7 @@ export default function CalendarPage() {
                       className="rounded-lg border p-3 sm:p-4 hover:shadow-md transition-shadow"
                     >
                       <div className="flex items-center gap-2 mb-2">
-                        <div className={cn("h-2 w-2 rounded-full", typeColors[event.type])} />
+                        <div className={cn("h-2 w-2 rounded-full", getEventTypeColor(event.type))} />
                         <Badge variant="outline" className="text-xs">
                           {getDateFromEvent(event)}
                         </Badge>

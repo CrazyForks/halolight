@@ -30,13 +30,24 @@ export default function LoginPage() {
   const { login, isLoading, error, clearError } = useAuthStore()
   useTitle("登录")
 
+  // 演示凭证从环境变量获取，生产环境应移除
+  const demoEmail = process.env.NEXT_PUBLIC_DEMO_EMAIL ?? ""
+  const demoPassword = process.env.NEXT_PUBLIC_DEMO_PASSWORD ?? ""
+
   const [formData, setFormData] = React.useState({
-    email: "admin@halolight.h7ml.cn",
-    password: "123456",
+    email: "",
+    password: "",
     remember: false,
   })
   const [showPassword, setShowPassword] = React.useState(false)
   const [localError, setLocalError] = React.useState("")
+
+  // 填充演示账号
+  const fillDemoCredentials = React.useCallback(() => {
+    if (demoEmail && demoPassword) {
+      setFormData((prev) => ({ ...prev, email: demoEmail, password: demoPassword }))
+    }
+  }, [demoEmail, demoPassword])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -402,16 +413,18 @@ export default function LoginPage() {
                     className="flex items-center gap-2 py-2"
                   >
                     <div className="flex-1 h-px bg-border/50" />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setFormData({ ...formData, email: "admin@halolight.h7ml.cn", password: "123456" })}
-                      className="h-7 px-3 text-xs text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg"
-                    >
-                      <User className="h-3 w-3 mr-1.5" />
-                      测试账号
-                    </Button>
+                    {demoEmail && demoPassword && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={fillDemoCredentials}
+                        className="h-7 px-3 text-xs text-muted-foreground hover:text-primary hover:bg-primary/5 rounded-lg"
+                      >
+                        <User className="h-3 w-3 mr-1.5" />
+                        测试账号
+                      </Button>
+                    )}
                     <div className="flex-1 h-px bg-border/50" />
                   </motion.div>
 
@@ -458,10 +471,11 @@ export default function LoginPage() {
                     立即注册
                   </Link>
                 </p>
-                <p className="text-xs text-muted-foreground/60 text-center leading-relaxed">
-                  测试账号：admin@halolight.h7ml.cn（管理员） / ops@halolight.h7ml.cn（运营） / editor@halolight.h7ml.cn（编辑）{" "}
-                  密码均为 123456
-                </p>
+                {process.env.NEXT_PUBLIC_SHOW_DEMO_HINT === "true" && (
+                  <p className="text-xs text-muted-foreground/60 text-center leading-relaxed">
+                    测试账号请点击上方&ldquo;测试账号&rdquo;按钮自动填充
+                  </p>
+                )}
               </CardFooter>
             </Card>
           </motion.div>

@@ -513,11 +513,11 @@ export default function RegisterPage() {
                       />
                       <span className="text-muted-foreground group-hover:text-foreground transition-colors">
                         我已阅读并同意{" "}
-                        <Link href="#" className="text-primary hover:text-primary/80 font-medium transition-colors">
+                        <Link href="/terms" className="text-primary hover:text-primary/80 font-medium transition-colors">
                           服务条款
                         </Link>{" "}
                         和{" "}
-                        <Link href="#" className="text-primary hover:text-primary/80 font-medium transition-colors">
+                        <Link href="/privacy" className="text-primary hover:text-primary/80 font-medium transition-colors">
                           隐私政策
                         </Link>
                       </span>

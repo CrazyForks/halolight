@@ -3,13 +3,7 @@ import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 
-import { MockProvider } from "@/components/mock-provider";
-import { AuthProvider } from "@/providers/auth-provider";
-import { ErrorProvider } from "@/providers/error-provider";
-import { PermissionProvider } from "@/providers/permission-provider";
-import { QueryProvider } from "@/providers/query-provider";
-import { ThemeProvider } from "@/providers/theme-provider";
-import { WebSocketProvider } from "@/providers/websocket-provider";
+import { AppProviders } from "@/providers/app-providers";
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -61,25 +55,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-        >
-          <MockProvider>
-            <QueryProvider>
-              <AuthProvider>
-                <PermissionProvider>
-                  <WebSocketProvider>
-                    <ErrorProvider>
-                      {children}
-                    </ErrorProvider>
-                  </WebSocketProvider>
-                </PermissionProvider>
-              </AuthProvider>
-            </QueryProvider>
-          </MockProvider>
-        </ThemeProvider>
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

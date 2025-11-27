@@ -27,7 +27,7 @@ export const useUiSettingsStore = create<UiSettingsState>()(
   persist(
     (set) => ({
       skin: "default",
-      showFooter: false,
+      showFooter: true,
       showTabBar: true,
       setSkin: (skin) => set({ skin }),
       setShowFooter: (visible) => set({ showFooter: visible }),

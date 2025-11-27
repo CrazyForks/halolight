@@ -180,15 +180,34 @@ const nextConfig = {
 
   // 实验性功能
   experimental: {
-    // 优化包导入
+    // 优化包导入 - 减少打包体积
     optimizePackageImports: [
       "@radix-ui/react-icons",
+      "@radix-ui/react-alert-dialog",
+      "@radix-ui/react-avatar",
+      "@radix-ui/react-context-menu",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-label",
+      "@radix-ui/react-popover",
+      "@radix-ui/react-scroll-area",
+      "@radix-ui/react-select",
+      "@radix-ui/react-separator",
+      "@radix-ui/react-slot",
+      "@radix-ui/react-switch",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-tooltip",
       "lucide-react",
       "framer-motion",
       "@tanstack/react-query",
       "recharts",
       "date-fns",
+      "zustand",
     ],
+    // 启用服务端 Actions
+    serverActions: {
+      bodySizeLimit: "2mb",
+    },
   },
 
   // 图片优化
@@ -196,16 +215,58 @@ const nextConfig = {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // 远程图片域名白名单
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.cloudinary.com",
+      },
+    ],
   },
 
   // 压缩优化
   compress: true,
 
-  // 生产环境 source map
+  // 生产环境 source map（关闭以减小体积）
   productionBrowserSourceMaps: false,
 
-  // 输出配置
+  // 输出配置 - standalone 模式便于 Docker 部署
   output: "standalone",
+
+  // 静态资源缓存
+  headers: async () => [
+    {
+      source: "/:all*(svg|jpg|jpeg|png|gif|ico|webp|avif)",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=31536000, immutable",
+        },
+      ],
+    },
+    {
+      source: "/_next/static/:path*",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=31536000, immutable",
+        },
+      ],
+    },
+    {
+      source: "/fonts/:path*",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=31536000, immutable",
+        },
+      ],
+    },
+  ],
 
   // 打包分析（按需开启）
   ...(process.env.ANALYZE === "true" && {
@@ -224,6 +285,30 @@ const nextConfig = {
       return config;
     },
   }),
+
+  // 重定向和重写规则
+  async redirects() {
+    return [
+      // 旧路由重定向示例
+      // {
+      //   source: '/old-path',
+      //   destination: '/new-path',
+      //   permanent: true,
+      // },
+    ];
+  },
+
+  // 忽略构建时的 ESLint 错误（CI 中单独检查）
+  eslint: {
+    // 仅在 CI 环境忽略，本地开发保持检查
+    ignoreDuringBuilds: process.env.CI === "true",
+  },
+
+  // 忽略 TypeScript 构建错误（CI 中单独检查）
+  typescript: {
+    // 仅在 CI 环境忽略，本地开发保持检查
+    ignoreBuildErrors: process.env.CI === "true",
+  },
 };
 
 export default pwaConfig(nextConfig);

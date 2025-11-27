@@ -276,12 +276,11 @@ export default function UsersPage() {
 
   // 创建用户
   const handleCreate = async (formData: UserFormData) => {
-    const role = roles.find((r) => r.id === formData.role)!
     await createMutation.mutateAsync({
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
-      role,
+      roleId: formData.role,
       status: formData.status,
     })
     setIsAddDialogOpen(false)
@@ -291,14 +290,13 @@ export default function UsersPage() {
   // 更新用户
   const handleUpdate = async (formData: UserFormData) => {
     if (!selectedUser) return
-    const role = roles.find((r) => r.id === formData.role)!
     await updateMutation.mutateAsync({
       id: selectedUser.id,
       data: {
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        role,
+        roleId: formData.role,
         status: formData.status,
       },
     })
