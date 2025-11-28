@@ -1,17 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import {
-  FileText,
-  Github,
-  Globe,
-  Heart,
-  Home,
-  Mail,
-  MapPin,
-  Sparkles,
-  Users,
-} from "lucide-react"
+import { Heart, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import * as React from "react"
@@ -23,21 +13,21 @@ import { useNavigationStore } from "@/stores/navigation-store"
 import { PendingOverlay } from "./pending-overlay"
 
 const quickLinks = [
-  { href: "/", label: "首页", icon: Home },
-  { href: "/users", label: "用户管理", icon: Users },
-  { href: "/analytics", label: "数据分析", icon: MapPin },
-  { href: "/documents", label: "文档管理", icon: FileText },
+  { href: "/", label: "首页" },
+  { href: "/users", label: "用户管理" },
+  { href: "/analytics", label: "数据分析" },
+  { href: "/documents", label: "文档管理" },
 ]
 
 const socialLinks = [
-  { href: projectInfo.repo, label: "GitHub", icon: Github },
-  { href: "mailto:h7ml@qq.com", label: "Email", icon: Mail },
-  { href: projectInfo.homepage, label: "官网", icon: Globe },
+  { href: projectInfo.repo, label: "GitHub" },
+  { href: "mailto:h7ml@qq.com", label: "Email" },
+  { href: projectInfo.homepage, label: "官网" },
 ]
 
 export function Footer() {
-  const router = useRouter()
   const pathname = usePathname()
+  const router = useRouter()
   const { pendingPath, label, source, startNavigation } = useNavigationStore()
   const titleMap: Record<string, string> = {
     "/": "首页",
@@ -54,7 +44,6 @@ export function Footer() {
   }
 
   const handleQuickLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    // 如果是外部链接或已经是当前页面，不处理
     if (href.startsWith("http") || href.startsWith("mailto:") || href === pathname) {
       return
     }
@@ -66,7 +55,6 @@ export function Footer() {
       source: "footer",
     })
 
-    // 使用 setTimeout 确保 loading 状态先显示
     setTimeout(() => {
       router.push(href)
     }, 50)
@@ -76,53 +64,26 @@ export function Footer() {
 
   return (
     <footer className="relative overflow-hidden border-t border-border/50 bg-background/80 backdrop-blur-xl">
-      {/* 光晕背景 */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden lg:block hidden">
         <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.15, 0.25, 0.15],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl"
         />
         <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.2, 0.3, 0.2],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.3, 0.2] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
           className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-indigo-500/20 blur-3xl"
         />
         <motion.div
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.1, 0.2, 0.1],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
           className="absolute left-1/2 top-0 h-48 w-48 -translate-x-1/2 rounded-full bg-violet-500/15 blur-3xl"
         />
       </div>
 
-      {/* 顶部渐变分隔线 */}
-      <div className="h-px bg-linear-to-r from-transparent via-primary/50 to-transparent" />
-
       <div className="relative mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
-        {/* 主要内容区 - 自适应网格 */}
-        <div className="grid grid-cols-1 gap-x-8 gap-y-6 py-6 sm:grid-cols-2 lg:grid-cols-4">
-          {/* 品牌区域 - 独占一列 */}
+        <div className="hidden lg:grid grid-cols-1 gap-x-8 gap-y-6 py-6 sm:grid-cols-2 lg:grid-cols-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -148,7 +109,6 @@ export function Footer() {
             </p>
           </motion.div>
 
-          {/* 快速链接 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -165,7 +125,6 @@ export function Footer() {
                     onClick={(e) => handleQuickLinkClick(e, link.href)}
                     className="group flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
                   >
-                    <link.icon className="h-4 w-4 group-hover:scale-110 transition-transform" />
                     <span>{link.label}</span>
                   </Link>
                 </li>
@@ -173,27 +132,6 @@ export function Footer() {
             </ul>
           </motion.div>
 
-            {/* 系统信息（大屏显示） */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="hidden lg:block space-y-3"
-          >
-            <h4 className="text-sm font-semibold text-foreground">系统信息</h4>
-            <ul className="space-y-1.5 text-sm text-muted-foreground">
-              <li className="flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                系统运行正常
-              </li>
-              <li>版本: v0.1.0</li>
-              <li>构建: 2025.01.26</li>
-              <li>环境: {process.env.NODE_ENV}</li>
-            </ul>
-          </motion.div>
-
-          {/* 关注我们 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -212,7 +150,7 @@ export function Footer() {
                   className="group inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border/50 bg-card/50 text-muted-foreground shadow-sm transition-all hover:-translate-y-1 hover:border-primary/50 hover:text-primary hover:shadow-md"
                   title={link.label}
                 >
-                  <link.icon className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-semibold">{link.label[0]}</span>
                 </a>
               ))}
             </div>
@@ -222,9 +160,40 @@ export function Footer() {
           </motion.div>
         </div>
 
+        <div className="lg:hidden space-y-4 py-6 text-sm text-muted-foreground">
+          <div className="flex flex-col gap-1">
+            <p className="text-base font-semibold text-foreground">{projectInfo.name}</p>
+            <p className="text-xs">{projectInfo.desc}</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {quickLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={(e) => handleQuickLinkClick(e, link.href)}
+                className="text-[13px] font-medium text-primary underline-offset-4 transition-colors hover:text-foreground"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-3 text-xs">
+            {socialLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground transition-colors hover:text-primary"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </div>
+
         <Separator className="bg-border/50" />
 
-        {/* 底部版权区 */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1, y: 0 }}

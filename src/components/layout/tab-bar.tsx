@@ -91,6 +91,12 @@ export function TabBar() {
   const [canScrollLeft, setCanScrollLeft] = React.useState(false)
   const [canScrollRight, setCanScrollRight] = React.useState(false)
   const showTabBar = useUiSettingsStore((state) => state.showTabBar)
+  const mobileTabBarFixed = useUiSettingsStore(
+    (state) => state.mobileTabBarFixed
+  )
+  const mobileHeaderFixed = useUiSettingsStore(
+    (state) => state.mobileHeaderFixed
+  )
   const [refreshingTabId, setRefreshingTabId] = React.useState<string | null>(null)
   const [isPending, startTransition] = React.useTransition()
   const refreshTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
@@ -272,8 +278,24 @@ export function TabBar() {
   if (!showTabBar) return null
   if (tabs.length <= 1) return null
 
+  const tabBarPositionClasses = mobileTabBarFixed
+    ? [
+        "fixed",
+        "left-0",
+        "right-0",
+        mobileHeaderFixed ? "top-16" : "top-0",
+      ]
+    : "relative"
+
   return (
-    <div className="flex items-center border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div
+      className={cn(
+        "flex h-12 items-center border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        tabBarPositionClasses,
+        "lg:static",
+        "z-40"
+      )}
+    >
       {/* 左滚动按钮 */}
       {canScrollLeft && (
         <Button

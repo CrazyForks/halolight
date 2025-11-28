@@ -18,9 +18,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { cn } from "@/lib/utils"
 import { useAuthStore } from "@/stores/auth-store"
 import { useErrorStore } from "@/stores/error-store"
 import { useNavigationStore } from "@/stores/navigation-store"
+import { useUiSettingsStore } from "@/stores/ui-settings-store"
 
 import { QuickSettings } from "./quick-settings"
 
@@ -68,13 +70,22 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
     () => (accounts.length > 0 ? accounts : user ? [user] : []),
     [accounts, user]
   )
+  const mobileHeaderFixed = useUiSettingsStore(
+    (state) => state.mobileHeaderFixed
+  )
+
+  const headerPositionClasses = mobileHeaderFixed ? "fixed inset-x-0 top-0" : "relative"
 
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      className={cn(
+        "z-50 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        "lg:sticky lg:top-0",
+        headerPositionClasses
+      )}
     >
       <div className="flex items-center gap-4">
         <Button

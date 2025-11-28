@@ -48,7 +48,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [commandOpen, setCommandOpen] = React.useState(false)
   const [isDesktop, setIsDesktop] = React.useState(true)
   const { pendingPath, label, source, finishNavigation } = useNavigationStore()
-  const { showFooter, showTabBar, skin } = useUiSettingsStore()
+  const {
+    showFooter,
+    showTabBar,
+    mobileHeaderFixed,
+    mobileTabBarFixed,
+    skin,
+  } = useUiSettingsStore()
   const pathname = usePathname()
 
   // 使用集中配置获取权限规则
@@ -100,6 +106,18 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }, [skin])
 
   const marginLeft = isDesktop ? (sidebarCollapsed ? 64 : 220) : 0
+  const MOBILE_HEADER_HEIGHT = 64
+  const MOBILE_TABBAR_HEIGHT = 48
+  const additionalTopOffset =
+    !isDesktop && mobileHeaderFixed ? MOBILE_HEADER_HEIGHT : 0
+  const additionalTabOffset =
+    !isDesktop && mobileTabBarFixed && showTabBar
+      ? MOBILE_TABBAR_HEIGHT
+      : 0
+  const mainPaddingTop =
+    !isDesktop && (additionalTopOffset || additionalTabOffset)
+      ? 24 + additionalTopOffset + additionalTabOffset
+      : undefined
   const guardedContent = requiredPermission ? (
     <PermissionGuard
       permission={requiredPermission}
@@ -186,6 +204,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
             className="flex-1 p-6 min-h-0 overflow-y-auto"
+            style={mainPaddingTop ? { paddingTop: mainPaddingTop } : undefined}
           >
             {guardedContent}
           </motion.main>

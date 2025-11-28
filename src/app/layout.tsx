@@ -45,6 +45,10 @@ export const metadata: Metadata = {
   },
 };
 
+// 全局关闭静态预渲染，避免客户端上下文依赖在构建时执行
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default function RootLayout({
   children,
 }: Readonly<{

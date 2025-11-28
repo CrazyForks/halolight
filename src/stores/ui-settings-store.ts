@@ -18,9 +18,14 @@ interface UiSettingsState {
   skin: SkinPreset
   showFooter: boolean
   showTabBar: boolean
+  mobileHeaderFixed: boolean
+  mobileTabBarFixed: boolean
   setSkin: (skin: SkinPreset) => void
   setShowFooter: (visible: boolean) => void
   setShowTabBar: (visible: boolean) => void
+  setMobileHeaderFixed: (fixed: boolean) => void
+  setMobileTabBarFixed: (fixed: boolean) => void
+  resetSettings: () => void
 }
 
 export const useUiSettingsStore = create<UiSettingsState>()(
@@ -29,9 +34,21 @@ export const useUiSettingsStore = create<UiSettingsState>()(
       skin: "default",
       showFooter: true,
       showTabBar: true,
+      mobileHeaderFixed: true,
+      mobileTabBarFixed: true,
       setSkin: (skin) => set({ skin }),
       setShowFooter: (visible) => set({ showFooter: visible }),
       setShowTabBar: (visible) => set({ showTabBar: visible }),
+      setMobileHeaderFixed: (fixed) => set({ mobileHeaderFixed: fixed }),
+      setMobileTabBarFixed: (fixed) => set({ mobileTabBarFixed: fixed }),
+      resetSettings: () =>
+        set({
+          skin: "default",
+          showFooter: true,
+          showTabBar: true,
+          mobileHeaderFixed: true,
+          mobileTabBarFixed: true,
+        }),
     }),
     {
       name: "ui-settings-storage",

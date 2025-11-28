@@ -9,6 +9,7 @@ import {
   Palette,
   PanelsTopLeft,
   Settings2,
+  Smartphone,
   Sun,
   X,
 } from "lucide-react"
@@ -114,8 +115,19 @@ const skinPresets: Array<{
 
 export function QuickSettings() {
   const { setTheme, theme, resolvedTheme } = useTheme()
-  const { skin, setSkin, showFooter, showTabBar, setShowFooter, setShowTabBar } =
-    useUiSettingsStore()
+  const {
+    skin,
+    setSkin,
+    showFooter,
+    showTabBar,
+    mobileHeaderFixed,
+    mobileTabBarFixed,
+    setShowFooter,
+    setShowTabBar,
+    setMobileHeaderFixed,
+    setMobileTabBarFixed,
+    resetSettings,
+  } = useUiSettingsStore()
   const [open, setOpen] = React.useState(false)
   const [mounted, setMounted] = React.useState(false)
 
@@ -252,6 +264,10 @@ export function QuickSettings() {
     },
     [skin, setSkin]
   )
+
+  const handleResetSettings = React.useCallback(() => {
+    resetSettings()
+  }, [resetSettings])
 
   const currentTheme = resolvedTheme || theme || "system"
 
@@ -422,6 +438,57 @@ export function QuickSettings() {
                     <Switch checked={showTabBar} onCheckedChange={setShowTabBar} />
                   </div>
                 </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3 pb-8">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Smartphone className="h-4 w-4" />
+                  <span>移动端行为</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between rounded-lg border border-border/70 bg-muted/40 px-3 py-2">
+                    <div>
+                      <p className="text-sm font-medium">固定头部</p>
+                      <p className="text-xs text-muted-foreground">
+                        滚动时保持顶部栏浮动，提升快速访问
+                      </p>
+                    </div>
+                    <Switch
+                      checked={mobileHeaderFixed}
+                      onCheckedChange={setMobileHeaderFixed}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between rounded-lg border border-border/70 bg-muted/40 px-3 py-2">
+                    <div>
+                      <p className="text-sm font-medium">固定标签栏</p>
+                      <p className="text-xs text-muted-foreground">
+                        页面滚动时保持多标签栏可见
+                      </p>
+                    </div>
+                    <Switch
+                      checked={mobileTabBarFixed}
+                      onCheckedChange={setMobileTabBarFixed}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-2 border-t pt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={handleResetSettings}
+                >
+                  恢复默认配置
+                </Button>
+                <p className="text-center text-xs text-muted-foreground">
+                  重置皮肤、布局与移动端行为为初始配置
+                </p>
               </div>
             </div>
           </ScrollArea>

@@ -231,8 +231,8 @@ const nextConfig = {
   // 压缩优化
   compress: true,
 
-  // 生产环境 source map（关闭以减小体积）
-  productionBrowserSourceMaps: process.env.NODE_ENV === "production",
+  // 生产环境 source map 关闭以减小体积和首包下载
+  productionBrowserSourceMaps: false,
 
   // 输出配置 - standalone 模式便于 Docker 部署
   output: "standalone",
