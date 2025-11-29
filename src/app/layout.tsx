@@ -105,11 +105,14 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
-        {/* 51.la 统计（国内服务，大陆可正常访问） */}
-        <Script
-          id="LA_COLLECT"
-          src="//sdk.51.la/js-sdk-pro.min.js?id=L1NaKSoU1jvMh9mE&ck=L1NaKSoU1jvMh9mE&autoTrack=true&hashMode=true&screenRecord=true"
-          strategy="afterInteractive"
+        {/* 51.la 图片统计（无 JS 依赖，兼容性最好） */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="https://web.51.la/go?id=L1NaKSoU1jvMh9mE"
+          alt=""
+          width={0}
+          height={0}
+          style={{ display: "none" }}
         />
         {/* Google Analytics（通过环境变量控制，大陆部署可禁用） */}
         {GA_ID && (
