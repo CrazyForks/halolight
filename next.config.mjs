@@ -83,37 +83,50 @@ const pwaConfig = withPWA({
         },
       },
     },
+    // Next.js 带哈希的静态资源（文件名包含哈希，内容不变）
+    // 使用 CacheFirst 因为文件名变化意味着新资源
     {
-      urlPattern: /\.(?:js)$/i,
-      handler: "StaleWhileRevalidate",
+      urlPattern: /\/_next\/static\/.+\.(js|css)$/i,
+      handler: "CacheFirst",
       options: {
-        cacheName: "static-js-assets",
+        cacheName: "next-static-assets",
         expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 24 * 60 * 60, // 24 hours
+          maxEntries: 64,
+          maxAgeSeconds: 365 * 24 * 60 * 60, // 1 year
         },
       },
     },
+    // 非 _next/static 的 JS/CSS（如第三方脚本）使用 NetworkFirst
+    // 确保部署后用户能获取最新版本
     {
-      urlPattern: /\.(?:css|less)$/i,
-      handler: "StaleWhileRevalidate",
+      urlPattern: ({ url }) => {
+        const pathname = url.pathname;
+        // 排除已处理的 _next/static
+        if (pathname.startsWith("/_next/static/")) return false;
+        return /\.(js|css)$/i.test(pathname);
+      },
+      handler: "NetworkFirst",
       options: {
-        cacheName: "static-style-assets",
+        cacheName: "dynamic-assets",
         expiration: {
           maxEntries: 32,
-          maxAgeSeconds: 24 * 60 * 60, // 24 hours
+          maxAgeSeconds: 60 * 60, // 1 hour
         },
+        networkTimeoutSeconds: 3,
       },
     },
+    // Next.js 页面数据（路由预取数据）
+    // 使用 NetworkFirst 确保用户获取最新页面数据
     {
       urlPattern: /\/_next\/data\/.+\/.+\.json$/i,
-      handler: "StaleWhileRevalidate",
+      handler: "NetworkFirst",
       options: {
         cacheName: "next-data",
         expiration: {
           maxEntries: 32,
-          maxAgeSeconds: 24 * 60 * 60, // 24 hours
+          maxAgeSeconds: 60 * 60, // 1 hour
         },
+        networkTimeoutSeconds: 3,
       },
     },
     {
