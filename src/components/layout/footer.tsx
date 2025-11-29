@@ -37,13 +37,13 @@ export function Footer() {
           {/* 链接 */}
           <div className="flex items-center gap-3 text-xs">
             <Link
-              href="/legal/privacy"
+              href="/privacy"
               className="hover:text-primary transition-colors"
             >
               隐私政策
             </Link>
             <Link
-              href="/legal/terms"
+              href="/terms"
               className="hover:text-primary transition-colors"
             >
               服务条款

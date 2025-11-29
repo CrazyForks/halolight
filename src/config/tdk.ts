@@ -104,12 +104,12 @@ export const ROUTE_TDK: Record<string, TdkEntry> = {
     description: "设置一个新的账户密码以恢复访问。",
     keywords: "重置密码, 找回账号, 安全",
   },
-  "/legal/terms": {
+  "/terms": {
     title: "服务条款",
     description: "查看 Admin Pro 的服务条款、使用协议与权利义务。",
     keywords: "服务条款, 协议, 法律",
   },
-  "/legal/privacy": {
+  "/privacy": {
     title: "隐私政策",
     description: "了解我们如何收集、使用、存储和保护您的个人信息。",
     keywords: "隐私, 数据保护, 政策",
