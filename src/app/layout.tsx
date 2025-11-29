@@ -49,6 +49,9 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+// Cloudflare Pages 需要 Edge Runtime
+export const runtime = "edge";
+
 export default function RootLayout({
   children,
 }: Readonly<{
