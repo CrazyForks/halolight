@@ -13,9 +13,15 @@ import type {
   Order,
   Product,
   Role,
+  RoleCreateRequest,
+  RoleDetail,
+  RoleUpdateRequest,
   SalesData,
   StorageInfo,
   SystemOverview,
+  Team,
+  TeamCreateRequest,
+  TeamUpdateRequest,
   User,
   VisitData,
 } from "./types"
@@ -268,6 +274,74 @@ export const fileService = {
     }),
 }
 
+// 团队相关 API
+export const teamService = {
+  // 获取团队列表
+  getTeams: () => request<Team[]>("/teams"),
+
+  // 获取单个团队
+  getTeam: (id: string) => request<Team>(`/teams/${id}`),
+
+  // 创建团队
+  createTeam: (data: TeamCreateRequest) =>
+    request<Team>("/teams", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  // 更新团队
+  updateTeam: (id: string, data: TeamUpdateRequest) =>
+    request<Team>(`/teams/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  // 删除团队
+  deleteTeam: (id: string) =>
+    request<void>(`/teams/${id}`, { method: "DELETE" }),
+
+  // 添加成员
+  addMember: (teamId: string, userId: string, role: "admin" | "member" = "member") =>
+    request<void>(`/teams/${teamId}/members`, {
+      method: "POST",
+      body: JSON.stringify({ userId, role }),
+    }),
+
+  // 移除成员
+  removeMember: (teamId: string, userId: string) =>
+    request<void>(`/teams/${teamId}/members/${userId}`, { method: "DELETE" }),
+}
+
+// 角色相关 API（扩展）
+export const roleService = {
+  // 获取角色列表（带详情）
+  getRoles: () => request<RoleDetail[]>("/roles/detail"),
+
+  // 获取单个角色
+  getRole: (id: string) => request<RoleDetail>(`/roles/${id}`),
+
+  // 创建角色
+  createRole: (data: RoleCreateRequest) =>
+    request<RoleDetail>("/roles", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  // 更新角色
+  updateRole: (id: string, data: RoleUpdateRequest) =>
+    request<RoleDetail>(`/roles/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  // 删除角色
+  deleteRole: (id: string) =>
+    request<void>(`/roles/${id}`, { method: "DELETE" }),
+
+  // 获取所有权限列表
+  getPermissions: () => request<Array<{ key: string; label: string; group: string }>>("/permissions"),
+}
+
 // 重新导出类型供外部使用
 export type {
   Activity,
@@ -283,9 +357,11 @@ export type {
   Order,
   Product,
   Role,
+  RoleDetail,
   SalesData,
   StorageInfo,
   SystemOverview,
+  Team,
   User,
   VisitData,
 } from "./types"

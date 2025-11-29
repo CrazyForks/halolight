@@ -20,14 +20,14 @@ const forgotBackground = {
       to: "to-cyan-400/30",
       className: "absolute -top-36 -left-32 w-96 h-96 rounded-full blur-3xl",
       animate: { scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] },
-      transition: { duration: 8, repeat: Infinity, ease: "easeInOut" },
+      transition: { duration: 8, repeat: Infinity, ease: "easeInOut" as const },
     },
     {
       from: "from-emerald-400/25",
       to: "to-teal-400/25",
       className: "absolute top-1/3 -right-24 w-80 h-80 rounded-full blur-3xl",
       animate: { scale: [1.15, 0.95, 1.15], opacity: [0.35, 0.55, 0.35] },
-      transition: { duration: 10, repeat: Infinity, ease: "easeInOut" },
+      transition: { duration: 10, repeat: Infinity, ease: "easeInOut" as const },
     },
   ],
 }

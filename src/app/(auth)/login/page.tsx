@@ -14,7 +14,6 @@ import {
   User,
 } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import * as React from "react"
 
 import { AuthShell } from "@/components/auth/auth-shell"
@@ -27,7 +26,6 @@ import { useTitle } from "@/hooks"
 import { useAuthStore } from "@/stores/auth-store"
 
 export default function LoginPage() {
-  const router = useRouter()
   const { login, isLoading, error, clearError } = useAuthStore()
   useTitle("登录")
 
@@ -59,7 +57,7 @@ export default function LoginPage() {
 
     try {
       await login(formData)
-      router.push("/")
+      // 登录成功后由 AuthProvider 统一处理跳转
     } catch {
       // 错误已在 store 中处理
     }

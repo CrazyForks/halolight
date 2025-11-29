@@ -1,5 +1,24 @@
 import withPWA from "next-pwa";
 
+// ============================================================================
+// Cloudflare Pages 环境检测
+// CF_PAGES: Cloudflare Pages 构建时自动注入
+// CF_PAGES_BRANCH: 当前部署分支
+// CF_PAGES_COMMIT_SHA: Git commit hash
+// CF_PAGES_URL: 部署 URL (如 https://xxx.pages.dev)
+// ============================================================================
+const isCloudflare = process.env.CF_PAGES === "1";
+const isVercel = process.env.VERCEL === "1";
+const isProduction = process.env.NODE_ENV === "production";
+
+// 是否使用 standalone 输出模式（用于 Docker/Node.js 部署）
+// 可通过 STANDALONE=true 环境变量显式启用
+const useStandalone =
+  process.env.STANDALONE === "true" || (!isCloudflare && !isVercel);
+
+// Cloudflare Images 配置（可选，需要开通 Cloudflare Images 服务）
+const enableCloudflareImages = !!process.env.NEXT_PUBLIC_CF_IMAGES_ACCOUNT_HASH;
+
 const pwaConfig = withPWA({
   dest: "public",
   register: true,
@@ -170,6 +189,9 @@ const pwaConfig = withPWA({
 const nextConfig = {
   reactStrictMode: true,
 
+  // 安全：移除 X-Powered-By 响应头
+  poweredByHeader: false,
+
   // 打包优化
   compiler: {
     // 移除 console.log（生产环境）
@@ -215,6 +237,17 @@ const nextConfig = {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Cloudflare Pages 不支持 Next.js 图片优化，仅在 CF 环境禁用
+    // 本地开发和其他部署平台可继续使用图片优化
+    unoptimized: isCloudflare,
+    // Cloudflare Images loader（可选，配置 NEXT_PUBLIC_CF_IMAGES_ACCOUNT_HASH 后启用）
+    // 支持本地开发测试，不限于 CF 环境
+    ...(enableCloudflareImages
+      ? {
+          loader: "custom",
+          loaderFile: "./src/lib/cloudflare-image-loader.ts",
+        }
+      : {}),
     // 远程图片域名白名单
     remotePatterns: [
       {
@@ -234,8 +267,11 @@ const nextConfig = {
   // 生产环境 source map 关闭以减小体积和首包下载
   productionBrowserSourceMaps: false,
 
-  // 输出配置 - standalone 模式便于 Docker 部署
-  output: "standalone",
+  // 输出配置
+  // - Docker/Node.js 部署: 使用 standalone 模式（STANDALONE=true 或非云平台环境）
+  // - Cloudflare Pages: 使用默认输出（由 @cloudflare/next-on-pages 处理）
+  // - Vercel: 使用默认输出
+  ...(useStandalone ? { output: "standalone" } : {}),
 
   // 静态资源缓存
   headers: async () => [
@@ -289,6 +325,24 @@ const nextConfig = {
   typescript: {
     // 仅在 CI 环境忽略，本地开发保持检查
     ignoreBuildErrors: process.env.CI === "true",
+  },
+
+  // 暴露部署环境信息到客户端（用于调试和环境判断）
+  env: {
+    // 部署平台标识
+    NEXT_PUBLIC_DEPLOY_PLATFORM: isCloudflare
+      ? "cloudflare"
+      : isVercel
+        ? "vercel"
+        : "other",
+    // Git 信息（仅在非生产环境暴露，避免泄露私有仓库信息）
+    // 如需在生产环境显示，可设置 NEXT_PUBLIC_SHOW_GIT_INFO=true
+    ...((!isProduction || process.env.NEXT_PUBLIC_SHOW_GIT_INFO === "true") && {
+      NEXT_PUBLIC_GIT_BRANCH: process.env.CF_PAGES_BRANCH || "",
+      NEXT_PUBLIC_GIT_COMMIT_SHA: process.env.CF_PAGES_COMMIT_SHA
+        ? process.env.CF_PAGES_COMMIT_SHA.slice(0, 7)
+        : "",
+    }),
   },
 };
 

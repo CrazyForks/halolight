@@ -64,6 +64,16 @@ export const ROUTE_TDK: Record<string, TdkEntry> = {
     description: "管理您的账户设置和系统偏好。",
     keywords: "设置, 偏好, 系统管理",
   },
+  "/settings/teams": {
+    title: "团队设置",
+    description: "管理团队信息、成员和组织架构。",
+    keywords: "团队, 成员管理, 组织架构, Admin Pro",
+  },
+  "/settings/teams/roles": {
+    title: "角色管理",
+    description: "创建和管理系统角色，配置角色权限。",
+    keywords: "角色管理, 权限配置, RBAC, Admin Pro",
+  },
   "/users": {
     title: "用户管理",
     description: "管理系统用户、角色和权限。",

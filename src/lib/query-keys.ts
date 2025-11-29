@@ -25,6 +25,17 @@ export const roleKeys = {
   all: ["roles"] as const,
   list: () => [...roleKeys.all, "list"] as const,
   detail: (id: string) => [...roleKeys.all, "detail", id] as const,
+  permissions: () => [...roleKeys.all, "permissions"] as const,
+}
+
+// ============================================================================
+// 团队相关
+// ============================================================================
+
+export const teamKeys = {
+  all: ["teams"] as const,
+  list: () => [...teamKeys.all, "list"] as const,
+  detail: (id: string) => [...teamKeys.all, "detail", id] as const,
 }
 
 // ============================================================================

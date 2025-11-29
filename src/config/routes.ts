@@ -56,6 +56,8 @@ export const ROUTE_PERMISSIONS: Record<string, Permission> = {
   "/notifications": "notifications:view",
   "/accounts": "settings:view",
   "/settings": "settings:view",
+  "/settings/teams": "settings:view",
+  "/settings/teams/roles": "settings:view",
   "/profile": "settings:view",
   "/docs": "documents:view",
 }
@@ -71,6 +73,8 @@ export const ROUTE_TITLES: Record<string, string> = {
   "/calendar": "日程安排",
   "/notifications": "通知中心",
   "/settings": "系统设置",
+  "/settings/teams": "团队设置",
+  "/settings/teams/roles": "角色管理",
   "/accounts": "账号与权限",
   "/profile": "个人资料",
   "/docs": "帮助文档",
@@ -118,19 +122,49 @@ export interface MenuItem {
   href: string
   /** 所需权限（可选，从 ROUTE_PERMISSIONS 自动获取） */
   permission?: Permission
+  /** 子菜单（可选） */
+  children?: MenuItem[]
 }
 
 /** 侧边栏菜单项配置 */
 export const MENU_ITEMS: MenuItem[] = [
   { title: "仪表盘", icon: LayoutDashboard, href: "/" },
   { title: "用户管理", icon: Users, href: "/users" },
-  { title: "数据分析", icon: BarChart3, href: "/analytics" },
-  { title: "文档管理", icon: FileText, href: "/documents" },
-  { title: "文件存储", icon: FolderOpen, href: "/files" },
-  { title: "消息中心", icon: Mail, href: "/messages" },
-  { title: "日程安排", icon: Calendar, href: "/calendar" },
+  {
+    title: "内容管理",
+    icon: FileText,
+    href: "/documents",
+    children: [
+      { title: "文档管理", icon: FileText, href: "/documents" },
+      { title: "文件存储", icon: FolderOpen, href: "/files" },
+    ],
+  },
+  {
+    title: "业务运营",
+    icon: BarChart3,
+    href: "/analytics",
+    children: [
+      { title: "数据分析", icon: BarChart3, href: "/analytics" },
+      { title: "消息中心", icon: Mail, href: "/messages" },
+      { title: "日程安排", icon: Calendar, href: "/calendar" },
+    ],
+  },
   { title: "账号与权限", icon: ShieldCheck, href: "/accounts" },
-  { title: "系统设置", icon: Settings, href: "/settings" },
+  {
+    title: "系统设置",
+    icon: Settings,
+    href: "/settings",
+    children: [
+      {
+        title: "团队设置",
+        icon: Users,
+        href: "/settings/teams",
+        children: [
+          { title: "角色管理", icon: ShieldCheck, href: "/settings/teams/roles" },
+        ],
+      },
+    ],
+  },
 ]
 
 // ============================================================================

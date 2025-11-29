@@ -50,6 +50,8 @@ const pathTitles: Record<string, string> = {
   "/notifications": "通知中心",
   "/profile": "个人资料",
   "/docs": "帮助文档",
+  "/settings/teams": "团队设置",
+  "/settings/teams/roles": "角色管理",
 }
 
 // 路径到图标的映射
@@ -66,6 +68,8 @@ const pathIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   "/notifications": Bell,
   "/profile": User,
   "/docs": HelpCircle,
+  "/settings/teams": Settings,
+  "/settings/teams/roles": ShieldCheck,
 }
 
 const resolveTitle = (path: string) => {

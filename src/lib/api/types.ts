@@ -380,3 +380,69 @@ export interface StorageInfo {
     others: number
   }
 }
+
+// ============================================================================
+// 团队
+// ============================================================================
+
+/** 团队成员 */
+export interface TeamMember {
+  id: string
+  userId: string
+  name: string
+  email: string
+  avatar?: string
+  role: "owner" | "admin" | "member"
+  joinedAt: string
+}
+
+/** 团队 */
+export interface Team {
+  id: string
+  name: string
+  description?: string
+  avatar?: string
+  memberCount: number
+  members?: TeamMember[]
+  createdAt: string
+  updatedAt: string
+}
+
+/** 团队创建请求 */
+export interface TeamCreateRequest {
+  name: string
+  description?: string
+}
+
+/** 团队更新请求 */
+export interface TeamUpdateRequest {
+  name?: string
+  description?: string
+}
+
+// ============================================================================
+// 角色详情（扩展）
+// ============================================================================
+
+/** 角色详情 */
+export interface RoleDetail extends Role {
+  userCount: number
+  createdAt: string
+  updatedAt: string
+}
+
+/** 角色创建请求 */
+export interface RoleCreateRequest {
+  name: string
+  label: string
+  description?: string
+  permissions: Permission[]
+}
+
+/** 角色更新请求 */
+export interface RoleUpdateRequest {
+  name?: string
+  label?: string
+  description?: string
+  permissions?: Permission[]
+}
