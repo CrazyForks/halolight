@@ -98,11 +98,17 @@ export function Sidebar({
     (href: string, label: string) => {
       const required = getMenuPermission(href)
       if (required && !hasPermission(required)) return
-      if (pathname === href) return
+      if (pathname === href) {
+        // 即使是当前页面，移动端也应关闭菜单
+        onCollapsedChange(true)
+        return
+      }
       startNavigation({ path: href, label, source: "sidebar" })
       router.push(href)
+      // 导航后关闭移动端侧边栏
+      onCollapsedChange(true)
     },
-    [hasPermission, pathname, router, startNavigation]
+    [hasPermission, pathname, router, startNavigation, onCollapsedChange]
   )
 
   const handleHoverItem = React.useCallback(
