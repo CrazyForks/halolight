@@ -25,36 +25,15 @@ const pwaConfig = withPWA({
   skipWaiting: true,
   disable: process.env.NODE_ENV === "development",
   runtimeCaching: [
-    {
-      urlPattern: /^https:\/\/fonts\.(?:gstatic)\.com\/.*/i,
-      handler: "CacheFirst",
-      options: {
-        cacheName: "google-fonts-webfonts",
-        expiration: {
-          maxEntries: 4,
-          maxAgeSeconds: 365 * 24 * 60 * 60, // 1 year
-        },
-      },
-    },
-    {
-      urlPattern: /^https:\/\/fonts\.(?:googleapis)\.com\/.*/i,
-      handler: "StaleWhileRevalidate",
-      options: {
-        cacheName: "google-fonts-stylesheets",
-        expiration: {
-          maxEntries: 4,
-          maxAgeSeconds: 7 * 24 * 60 * 60, // 1 week
-        },
-      },
-    },
+    // 本地字体缓存（已改用自托管字体，无需 Google Fonts 规则）
     {
       urlPattern: /\.(?:eot|otf|ttc|ttf|woff|woff2|font.css)$/i,
-      handler: "StaleWhileRevalidate",
+      handler: "CacheFirst",
       options: {
         cacheName: "static-font-assets",
         expiration: {
-          maxEntries: 4,
-          maxAgeSeconds: 7 * 24 * 60 * 60, // 1 week
+          maxEntries: 10,
+          maxAgeSeconds: 365 * 24 * 60 * 60, // 1 year
         },
       },
     },

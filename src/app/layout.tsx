@@ -1,20 +1,64 @@
 import "./globals.css";
 
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import Script from "next/script";
 
 import { AppProviders } from "@/providers/app-providers";
 
-const inter = Inter({
+// 使用本地字体，避免依赖 Google Fonts（大陆访问受限）
+// 字体文件位于 public/fonts 目录
+const inter = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Inter-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Inter-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Inter-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Inter-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-geist-sans",
-  subsets: ["latin"],
+  display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const jetbrainsMono = localFont({
+  src: [
+    {
+      path: "../../public/fonts/JetBrainsMono-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/JetBrainsMono-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/JetBrainsMono-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
+
+// Google Analytics ID（通过环境变量配置，大陆部署可留空禁用）
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export const viewport: Viewport = {
   themeColor: [
@@ -61,20 +105,24 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
-        {/* 51.la 统计 */}
+        {/* 51.la 统计（国内服务，大陆可正常访问） */}
         <Script
           id="LA_COLLECT"
           src="//sdk.51.la/js-sdk-pro.min.js?id=L1NaKSoU1jvMh9mE&ck=L1NaKSoU1jvMh9mE&autoTrack=true&hashMode=true&screenRecord=true"
           strategy="afterInteractive"
         />
-        {/* Google Analytics */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-XMS590XWNN"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-XMS590XWNN');`}
-        </Script>
+        {/* Google Analytics（通过环境变量控制，大陆部署可禁用） */}
+        {GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${GA_ID}');`}
+            </Script>
+          </>
+        )}
       </head>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}

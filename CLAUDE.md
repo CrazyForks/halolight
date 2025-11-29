@@ -108,6 +108,7 @@ src/
 | `NEXT_PUBLIC_WS_URL` | WebSocket 服务器地址 | - |
 | `NEXT_PUBLIC_APP_TITLE` | 应用标题 | `Admin Pro` |
 | `NEXT_PUBLIC_BRAND_NAME` | 品牌名称 | `Halolight` |
+| `NEXT_PUBLIC_GA_ID` | Google Analytics ID（大陆部署留空禁用） | - |
 
 ## 安全特性
 
