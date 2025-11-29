@@ -361,10 +361,10 @@ export function Header({ onMenuClick, onSearchClick }: HeaderProps) {
               asChild
               onClick={(e) => {
                 e.preventDefault()
-                handleNavigate("/docs", "帮助文档")
+                handleNavigate("https://halolight.docs.h7ml.cn/", "帮助文档")
               }}
             >
-              <Link href="/docs" className="cursor-pointer">
+              <Link href="https://halolight.docs.h7ml.cn/" className="cursor-pointer">
                 <HelpCircle className="mr-2 h-4 w-4" />
                 帮助文档
               </Link>
