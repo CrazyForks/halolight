@@ -8,6 +8,7 @@ import { AppProviders } from "@/providers/app-providers";
 
 // 使用本地字体，避免依赖 Google Fonts（大陆访问受限）
 // 字体文件位于 public/fonts 目录
+// 只预加载 Regular 字重，其他按需加载以减少首屏资源
 const inter = localFont({
   src: [
     {
@@ -33,6 +34,7 @@ const inter = localFont({
   ],
   variable: "--font-geist-sans",
   display: "swap",
+  preload: false, // 禁用自动预加载，按需加载字体
 });
 
 const jetbrainsMono = localFont({
@@ -55,6 +57,7 @@ const jetbrainsMono = localFont({
   ],
   variable: "--font-geist-mono",
   display: "swap",
+  preload: false, // 代码字体按需加载
 });
 
 // Google Analytics ID（通过环境变量配置，大陆部署可留空禁用）
@@ -115,13 +118,14 @@ export default function RootLayout({
           style={{ display: "none" }}
         />
         {/* Google Analytics（通过环境变量控制，大陆部署可禁用） */}
+        {/* 使用 lazyOnload 避免预加载警告，不影响核心功能 */}
         {GA_ID && (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-              strategy="afterInteractive"
+              strategy="lazyOnload"
             />
-            <Script id="google-analytics" strategy="afterInteractive">
+            <Script id="google-analytics" strategy="lazyOnload">
               {`window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${GA_ID}');`}
             </Script>
           </>
