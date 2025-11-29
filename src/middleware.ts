@@ -46,6 +46,12 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
     "camera=(), microphone=(), geolocation=(), interest-cohort=()"
   )
 
+  // HTML 文档不缓存，确保用户获取最新版本
+  response.headers.set(
+    "Cache-Control",
+    "private, no-cache, no-store, max-age=0, must-revalidate"
+  )
+
   return response
 }
 
