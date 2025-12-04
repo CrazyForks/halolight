@@ -42,7 +42,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="hover:text-primary transition-colors"
             >
-              📚 文档
+              在线文档
             </a>
             <Link
               href="/privacy"
